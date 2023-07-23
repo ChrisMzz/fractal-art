@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from colorsys import hls_to_rgb
+import pdb
 
 pi = np.pi
 e = np.exp(1)
@@ -17,15 +18,12 @@ def polynomialize(arr):
     return lambda x : sum([arr[i]*mult(x,i) for i in range(len(arr))])
 
 def reduce(n):
-    while n >= 1:
-        n /= 3
-    return n*0.8
+    try:
+        result = n/3**int(np.log(n)/np.log(3))
+    except:
+        return np.NaN # was already NaN
+    return result/3
 
-def mult(z, n):
-    mult = 1
-    for _ in range(n):
-        mult *= z
-    return mult
 
 def julia_on_point(z, f):
     z0 = z
@@ -58,11 +56,11 @@ def bw_coloring(z): # only brightness of hls
 def julia_from_array(arr, coloring=bw_coloring):
     return coloring(julia(polynomialize(array_to_complex(arr))))
 
+if __name__ == '__main__':
+    image = julia_from_array([[0.2,0,1],[0.1,0,0]])
 
-image = julia_from_array([[0.2,0,1],[0.1,0,0]])
-
-plt.imshow(image)
-plt.show()
+    plt.imshow(image)
+    plt.show()
 
 
 
