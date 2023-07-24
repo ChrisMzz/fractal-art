@@ -18,18 +18,23 @@ class Generator():
         
         while True:
             idx = np.random.randint(len(self.list_data),size = self.batch_size)
-            temp_batch = []
+            img_batch, fct_batch = [], []
             for i in idx:
                 x,y = self.list_data[i]
-                combined = torch.cat([x,y])
-                temp_batch.append(combined)
-            img_batch, fct_batch = temp_batch[:,0], temp_batch[:,1]
-            yield img_batch, fct_batch
+                img = torch.unsqueeze(x, dim=0)
+                fct = torch.unsqueeze(y, dim=0)
+                img_batch.append(torch.unsqueeze(img, dim=0))
+                fct_batch.append(torch.unsqueeze(fct, dim=0))
+            
+            
+            yield torch.cat(img_batch), torch.cat(fct_batch)
 
 
 if __name__ == '__main__':
     import os
     import matplotlib.pyplot as plt
+    import fractalize as frctl
+    import utility
     
     DATA_NAME = "test"
     
@@ -43,3 +48,16 @@ if __name__ == '__main__':
     gene = Generator(inputs, targets, batch_size=5).gene()
 
     x,y = next(gene)
+
+    fig, (ax1, ax2) = plt.subplots(1,2)
+    
+    print(x.shape,y.shape)
+    
+    img = np.transpose(x[0], (1,2,0))
+    fct = np.transpose(y[0], (1,2,0))
+    ax1.imshow(img)
+    fractal = frctl.julia_from_array(fct)
+    fractal = utility.set_nan_to_zero(fractal)
+    ax2.imshow(fractal)
+    plt.show()
+    
