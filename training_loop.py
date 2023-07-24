@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import loss
-import unet_variation as unet
+import carrnet
 import fractalize as frctl
 import torch
 import torch.nn as nn
@@ -41,7 +41,7 @@ RESCALE = 1
 gene = generator.Generator(inputs, targets, batch_size=BATCH_SIZE)
 
 #load model
-model = unet.UNet().float()
+model = carrnet.CArrNet().float()
 
 #load optimizer
 optimizer = torch.optim.Adam(model.parameters(), lr = LEARNING_RATE)
