@@ -9,6 +9,7 @@ import tqdm
 import matplotlib.pyplot as plt
 import utility
 import generator
+import pdb
 
 #Defining parameters
 DATA_NAME = "test"
@@ -34,11 +35,7 @@ LEARNING_RATE = 0.00005
 
 #PATCH_SIZE = (512,512)
 
-SKELETON = False
-CONTOUR = False
-RESCALE = 1
-
-gene = generator.Generator(inputs, targets, batch_size=BATCH_SIZE)
+gene = generator.Generator(inputs, targets, batch_size=BATCH_SIZE).gene()
 
 #load model
 model = carrnet.CArrNet().float()
@@ -55,17 +52,23 @@ for i in p_bar:
     x, y = next(gene)
     x = x.float()
     y = y.float()
-    
+
+    # print(x.shape, y.shape)
 
     #output of the net
     y_pred = model(x)[0]
 
-    l = loss.dice_loss(y_pred,y)
+    # squeeze
+    y_pred, y = torch.squeeze(y_pred, dim=1), torch.squeeze(y, dim=1)
+    
+    l = loss.frctl_loss(y_pred,y)
+
+    #pdb.set_trace()
 
     l.backward()
     optimizer.step()
     loss_plot[i] = l.detach().cpu().numpy()
-    #p_bar.set_postfix({'loss': np.mean(loss_plot[max(0,i-50):i+1])})
+    p_bar.set_postfix({'loss': np.mean(loss_plot[max(0,i-50):i+1])})
 
     if i%500 == 0 and i > 0:
         plt.plot(loss_plot)
