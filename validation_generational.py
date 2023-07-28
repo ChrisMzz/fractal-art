@@ -13,13 +13,14 @@ DATA_NAME = "test"
 EXPCE_NAME = "test1000"
 
 MODEL_FOLDER = fr'EXPCE\{EXPCE_NAME}\model'
+MODEL_NUMBER = 200
 
 TO_VALIDATE_FOLDER = fr'DATA\{DATA_NAME}\validation_data\images'
-VALIDATED_FOLDER = fr'EXPCE\{EXPCE_NAME}\validated'
+VALIDATED_FOLDER = fr'EXPCE\{EXPCE_NAME}\validated\model{MODEL_NUMBER}'
 for folder in [VALIDATED_FOLDER, fr'{VALIDATED_FOLDER}\functions', fr'{VALIDATED_FOLDER}\cheat_sheets']:
     os.makedirs(folder,exist_ok=True)
 
-model = torch.load(MODEL_FOLDER + "/model.pth")
+model = torch.load(MODEL_FOLDER + f"/model{MODEL_NUMBER}.pth")
 
 fnames = os.listdir(TO_VALIDATE_FOLDER)
 for i in tqdm.trange(len(fnames)):

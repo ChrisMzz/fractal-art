@@ -15,12 +15,12 @@ def dice_loss(source,target):
 def frctl_loss(source, target):
     source_fcts, target_fcts = [], []
     for fct in source:
-        img = frctl.julia_from_array(fct.detach().numpy())
+        img = frctl.julia_from_2Darray(fct.detach().numpy())
         img = utility.set_nan_to_zero(img)
         img = torch.from_numpy(img)
         source_fcts.append(torch.unsqueeze(img, dim=0))
     for fct in target:
-        img = frctl.julia_from_array(fct.detach().numpy())
+        img = frctl.julia_from_2Darray(fct.detach().numpy())
         img = utility.set_nan_to_zero(img)
         img = torch.from_numpy(img)
         target_fcts.append(torch.unsqueeze(img, dim=0))

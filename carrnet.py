@@ -11,7 +11,7 @@ def double_conv(in_channels, out_channels):
     )   
 
 
-class CArrNet(nn.Module):
+class CArrNet(nn.Module): # returns 2Darray of reals (first element is list of real parts, second is list of imaginary parts)
 
     def __init__(self, n_inputs = 1,sigmoid = False):
         super().__init__()
@@ -63,3 +63,6 @@ class CArrNet(nn.Module):
             out = self.sigmoid_layer(out)
 
         return [out]
+    
+    
+    

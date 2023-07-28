@@ -13,7 +13,7 @@ import pdb
 
 #Defining parameters
 DATA_NAME = "test"
-EXPCE_NAME = "test"
+EXPCE_NAME = "test1000"
 
 
 SOURCE_IMAGE_FOLDER = fr'DATA/{DATA_NAME}/training_data/images'
@@ -30,7 +30,7 @@ inputs, targets = os.listdir(SOURCE_IMAGE_FOLDER), os.listdir(SOURCE_FUNCTION_FO
 inputs, targets = [fr'{SOURCE_IMAGE_FOLDER}/{f}' for f in inputs], [fr'{SOURCE_FUNCTION_FOLDER}/{f}' for f in targets]
 
 BATCH_SIZE = 5
-NUM_STEPS = 300 # switched back to 2000 to test data augmentation using voodoo magic i guess
+NUM_STEPS = 1000 # switched back to 2000 to test data augmentation using voodoo magic i guess
 LEARNING_RATE = 0.00005
 
 #PATCH_SIZE = (512,512)
@@ -70,11 +70,14 @@ for i in p_bar:
     loss_plot[i] = l.detach().cpu().numpy()
     p_bar.set_postfix({'loss': np.mean(loss_plot[max(0,i-50):i+1])})
 
-    if i%25 == 0 and i > 0:
+    if i%50 == 0 and i > 0:
         plt.plot(loss_plot)
         plt.plot(utility.running_mean(loss_plot,50))
         plt.savefig(os.path.join(MODEL_FOLDER,'loss_function.svg'))
         plt.close()
+        
+    if i%200 == 0 and i > 0:
+        torch.save(model,os.path.join(MODEL_FOLDER,f'model_{i}.pth'))
 
 
 #Save model

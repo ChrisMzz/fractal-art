@@ -34,8 +34,9 @@ def julia_on_point(z, f):
 def array_to_complex(arr):
     return [arr[0][i] + arr[1][i]*1j for i in range(len(arr[0]))]
 
-def julia(f):
-    x,y = np.ogrid[-2:2:512*1j, -2:2:512*1j]
+def julia(f, shape=(512,512)):
+    h, w = shape
+    x,y = np.ogrid[-2:2:w*1j, -2:2:h*1j]
     z = x + 1j*y
     return julia_on_point(z, f)
 
@@ -53,11 +54,15 @@ def hls_dc(z):
 def bw_coloring(z): # only brightness of hls
     return (np.vectorize(reduce)(np.abs(z))**1.1).transpose()
 
-def julia_from_array(arr, coloring=bw_coloring):
-    return coloring(julia(polynomialize(array_to_complex(arr))))
+def julia_from_2Darray(arr, shape=(512,512), coloring=bw_coloring):
+    return coloring(julia(polynomialize(array_to_complex(arr)), shape))
+
+def julia_from_array(arr, shape=(512,512), coloring=bw_coloring):
+    return coloring(julia(polynomialize(arr), shape))
+
 
 if __name__ == '__main__':
-    image = julia_from_array([[0.2,0,1],[0.1,0,0]])
+    image = julia_from_2Darray([[0.2,0,1],[0.1,0,0]])
 
     plt.imshow(image)
     plt.show()
