@@ -20,7 +20,7 @@ AMOUNT = 50
 training, validation = int(AMOUNT*0.8), int(AMOUNT*0.2) # 80-20 rule for training and validation data
 
 DATA_NAME = 'test'
-PATH_TO_SAVE = fr'DATA/{DATA_NAME}'
+PATH_TO_SAVE = fr'NN/DATA/{DATA_NAME}'
 for folder in [PATH_TO_SAVE, fr'{PATH_TO_SAVE}/training_data', fr'{PATH_TO_SAVE}/validation_data', \
             fr'{PATH_TO_SAVE}/training_data/functions', fr'{PATH_TO_SAVE}/training_data/images', \
             fr'{PATH_TO_SAVE}/validation_data/functions', fr'{PATH_TO_SAVE}/validation_data/images', \
