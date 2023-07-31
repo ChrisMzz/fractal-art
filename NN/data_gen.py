@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0, '../lib')
 import fractalize as frctl
 import utility
 import os

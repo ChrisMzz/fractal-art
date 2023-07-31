@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '.')
+sys.path.insert(0, '../lib')
 import torch
 from torch.autograd import Variable
 import fractalize as frctl

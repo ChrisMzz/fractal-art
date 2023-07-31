@@ -7,6 +7,8 @@ from magicgui import magicgui
 import pathlib # to include paths in magicgui widgets
 from PIL import Image as pilimage
 
+import sys
+sys.path.insert(0, '../lib')
 import animator as anim
 import fractalize as frctl
 import utility as util
@@ -92,7 +94,7 @@ def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=1024, orde
         frames.append(img)
     viewer.add_image(np.array(frames))
     layer = viewer.layers[-1]
-    layer.metadata["arr"] = arr
+    layer.metadata["arr"] = arr_list
     layer.metadata["ordertxt"] = ordertxt
     
     layer.name += ' - available arr'

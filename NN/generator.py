@@ -33,6 +33,8 @@ class Generator():
 if __name__ == '__main__':
     import os
     import matplotlib.pyplot as plt
+    import sys
+    sys.path.insert(0, '../lib')
     import fractalize as frctl
     import utility
     
