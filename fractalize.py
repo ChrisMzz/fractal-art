@@ -9,6 +9,10 @@ e = np.exp(1)
 THRESH = 100
 
 
+def set_thresh(thresh):
+    global THRESH
+    THRESH = thresh
+
 def mult(z, n):
     mult = 1
     for _ in range(n):
