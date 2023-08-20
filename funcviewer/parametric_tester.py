@@ -23,25 +23,36 @@ res = frctl.parametric_cmap(None, im)
 
 fig, [[axTL, axTR], [axBL, axBR]] = plt.subplots(2,2)
 
-x = np.linspace(0,1, 1000)
+x = np.linspace(0,1,1000)
 
-
+cmap = np.array([[[param_R(t), param_G(t), param_B(t)] for t in x] for _ in x])
+print(cmap.shape)
 axTL.plot(x, param_R(x), color='r')
 axTL.plot(x, param_G(x), color='g')
 axTL.plot(x, param_B(x), color='b')
-axTL.set_title('RGB Color Distribution')
+axTL.plot(x, (param_R(x)+param_G(x)+param_B(x))/3, color=(0,0,0), linestyle=':')
+axTL.set_title('RGB Colour Distribution')
 
 axBL.plot(x, param_R(x)*param_G(x), color=(1,1,0))
 axBL.plot(x, param_G(x)*param_B(x), color=(0,1,1))
 axBL.plot(x, param_R(x)*param_B(x), color=(1,0,1))
-axBL.set_title('CYM Color Distribution')
+axBL.plot(x, (param_R(x)+param_G(x)+param_B(x))/3, color=(0,0,0), linestyle=':')
+axBL.set_title('CYM Colour Distribution')
 
-axTR.plot(x, (param_R(x)+param_G(x)+param_B(x))/3, color=(0,0,0))
-axTR.set_title('Brightness Distribution')
+axTR.imshow(cmap)
+axTR.set_title('Colourmap Result')
+
+
+axTL.set_ylim([0,1]), axBL.set_ylim([0,1])
 
 axBR.imshow(res)
 axBR.set_title('Result Image')
 
+fig.set_figwidth(10)
+fig.set_figheight(8)
+
+
+#fig.savefig('default_params.png', dpi=300, format='png')
 plt.show()
 
 
