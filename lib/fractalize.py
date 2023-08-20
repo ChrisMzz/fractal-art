@@ -8,6 +8,24 @@ pi = np.pi
 e = np.exp(1)
 THRESH = 100
 
+param_R = lambda t : 9*(1-t)*t**3
+param_G = lambda t : 15*((1-t)**2)*t**2
+param_B = lambda t : 8.5*((1-t)**3)*t
+
+
+# from https://theses.liacs.nl/pdf/2018-2019-JonckheereLSde.pdf
+
+
+def set_param(param, f):
+    global param_R, param_G, param_B
+    if param == 'r' or param == 'R':
+        param_R = f
+    if param == 'g' or param == 'G':
+        param_G = f
+    if param == 'b' or param == 'B':
+        param_B = f
+    return
+
 
 def set_thresh(thresh):
     global THRESH
@@ -61,15 +79,17 @@ def hls_dc(z, esc):
 def bw_coloring(z, esc): # only brightness of hls
     return (np.vectorize(reduce)(np.abs(z))**1.1).transpose()
 
-def bernstein(z, esc):
+
+def parametric_cmap(z, esc):
+    global param_R, param_G, param_B
     t = esc/(THRESH-1)
-    # from https://theses.liacs.nl/pdf/2018-2019-JonckheereLSde.pdf
-    r = lambda t : 9*(1-t)*t**3
-    g = lambda t : 15*((1-t)**2)*t**2
-    b = lambda t : 8.5*((1-t)**3)*t
-    c = np.array([r(t),g(t),b(t)])
+    c = np.array([param_R(t), param_G(t), param_B(t)])
     c = np.transpose(c, (1,2,0))
     return c
+
+
+# end of colorings
+
 
 def julia_from_2Darray(arr, shape=(512,512), coloring=bw_coloring):
     z, esc = julia(polynomialize(array_to_complex(arr)), shape)
@@ -92,7 +112,7 @@ if __name__ == '__main__':
     
     func_arr = [1-2*np.random.rand(11), 1-2*np.random.rand(11)]
     
-    image = julia_from_2Darray(func_arr, (1024,1024), coloring=bernstein)
+    image = julia_from_2Darray(func_arr, (1024,1024), coloring=parametric_cmap)
     #image = utility.set_nan_to_zero(image)
     plt.imshow(image)
     plt.show()

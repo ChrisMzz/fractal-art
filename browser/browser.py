@@ -2,7 +2,7 @@ import napari
 from napari.layers import Image # for magicgui and selection error handling
 from napari.utils import progress
 import tqdm
-from qtpy.QtWidgets import QPushButton
+from qtpy.QtWidgets import QPushButton, QMessageBox
 from magicgui import magicgui
 import pathlib # to include paths in magicgui widgets
 from PIL import Image as pilimage
@@ -22,6 +22,13 @@ RESOLUTION = 256
 SAVE_LOCATION = 'dump/browser'
 ORDER = 11
 
+param_R = lambda t : 9*(1-t)*t**3
+param_G = lambda t : 15*((1-t)**2)*t**2
+param_B = lambda t : 8.5*((1-t)**3)*t
+
+# from https://theses.liacs.nl/pdf/2018-2019-JonckheereLSde.pdf
+
+
 def func_gen():
     while True: # I'm so sorry
         yield anim.random_function_array(ORDER)
@@ -35,7 +42,7 @@ def debug_reload():
 
 def viewer_next():
     arr = next(gene)
-    img = frctl.julia_from_2Darray(arr, (RESOLUTION,RESOLUTION), frctl.bernstein)
+    img = frctl.julia_from_2Darray(arr, (RESOLUTION,RESOLUTION), frctl.parametric_cmap)
     ordertxt = list('rgb')
     random.shuffle(ordertxt)
     ordertxt = ''.join(ordertxt)
@@ -50,6 +57,7 @@ def viewer_next():
 
 # global parameters
 @magicgui(
+    call_button='Set New Parameters',
     thresh={'value':100, 'max':500},
     resolution={'value':256, 'max':8192},
     order={'value':11, 'max':50},
@@ -88,7 +96,7 @@ def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=1024, orde
     arr_list = anim.lerp(arr1, arr2, breaks)
     frames = []
     for arr in progress(tqdm.tqdm(arr_list)):
-        img = frctl.julia_from_2Darray(arr, (new_resolution,new_resolution), frctl.bernstein)
+        img = frctl.julia_from_2Darray(arr, (new_resolution,new_resolution), frctl.parametric_cmap)
         img = anim.colorswap(img, ordertxt)
         img = (255*img).astype(np.uint8)
         frames.append(img)
@@ -99,13 +107,13 @@ def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=1024, orde
     
     layer.name += ' - available arr'
 
-@magicgui()
+@magicgui(call_button='Load')
 def load_image_from_array(path=pathlib.Path(r'dump\browser\functions')):
     arr = np.load(path)
     ordertxt = list('rgb')
     random.shuffle(ordertxt)
     ordertxt = ''.join(ordertxt)
-    img = frctl.julia_from_2Darray(arr, (RESOLUTION,RESOLUTION), frctl.bernstein)
+    img = frctl.julia_from_2Darray(arr, (RESOLUTION,RESOLUTION), frctl.parametric_cmap)
     img = anim.colorswap(img, ordertxt)
     img = (255*img).astype(np.uint8)
     viewer.add_image(img)
@@ -121,7 +129,7 @@ def load_image_from_array(path=pathlib.Path(r'dump\browser\functions')):
 def enhance(image:Image, new_resolution=1024):
     arr = image.metadata["arr"]
     ordertxt = image.metadata["ordertxt"]
-    img = frctl.julia_from_2Darray(arr, (new_resolution,new_resolution), frctl.bernstein)
+    img = frctl.julia_from_2Darray(arr, (new_resolution,new_resolution), frctl.parametric_cmap)
     img = anim.colorswap(img, ordertxt)
     img = (255*img).astype(np.uint8)
     viewer.add_image(img)
@@ -129,6 +137,31 @@ def enhance(image:Image, new_resolution=1024):
     layer.metadata["arr"] = arr
     layer.metadata["ordertxt"] = ordertxt
     layer.name += ' - enhanced'
+
+
+
+@magicgui(call_button='Make New Parametric Functions Layer')
+def make_param_functions_layer():
+    viewer.add_image(np.zeros((2,2)))
+    instructions = QMessageBox()
+    instructions.setText('Make a New Parametric Functions layer.\n\nIn the napari console, set your `param_R`, `param_G`, and `param_B` functions into the `viewer.layers[-1].metadata` dictionary.\n\nExample : \n`viewer.layers[-1].metadata["param_R"] = lambda t : 9*(1-t)*t**3`\n\nMake sure this layer is at the top of the layers list before you push the new parametric functions.')
+    instructions.setWindowTitle('Instructions')
+    instructions.exec()
+
+
+@magicgui(call_button='Push New Parametric Functions')
+def push_param_functions():
+    try:
+        param_R = viewer.layers[-1].metadata["param_R"]
+        param_G = viewer.layers[-1].metadata["param_G"]
+        param_B = viewer.layers[-1].metadata["param_B"]
+        frctl.set_param('R', param_R)
+        frctl.set_param('G', param_G)
+        frctl.set_param('B', param_B)
+    except:
+        return
+
+
 
 @viewer.bind_key('0', overwrite=True)
 def add_to_existing(v=viewer):
@@ -186,6 +219,9 @@ viewer.window.add_dock_widget(load_image_from_array,area = 'right', name='Load I
 viewer.window.add_dock_widget(enhance,area = 'right', name='Enhance Image')
 viewer.window.add_dock_widget(lerp_images,area = 'right', name='Lerp Images')
 viewer.window.add_dock_widget(list_buttons,area = 'bottom')
+viewer.window.add_dock_widget(make_param_functions_layer, area = 'bottom')
+viewer.window.add_dock_widget(push_param_functions, area = 'bottom')
+
 
 
 napari.run()

@@ -54,5 +54,9 @@ I also use `pathlib`, but that comes built into Python versions >= 3.4, so make 
 ![](https://github.com/ChrisMzz/fractal-art/blob/main/browser/dump/browser/gifs/giftesting.gif)
 
 
+### Parametric Function Editor for Colours (Visualiser)
+
+![](https://github.com/ChrisMzz/fractal-art/blob/main/readme_dump/default_params.png)
+
 
 
