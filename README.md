@@ -47,6 +47,7 @@ I also use `pathlib`, but that comes built into Python versions >= 3.4, so make 
 
 *work in progress*
 
+![](https://github.com/ChrisMzz/fractal-art/blob/main/readme_dump/test_viewer.png)
 
 
 ### Pretty gifs
@@ -58,5 +59,11 @@ I also use `pathlib`, but that comes built into Python versions >= 3.4, so make 
 
 ![](https://github.com/ChrisMzz/fractal-art/blob/main/readme_dump/default_params.png)
 
+![](https://github.com/ChrisMzz/fractal-art/blob/main/readme_dump/example_params.png)
 
+### Napari 3D Projection Viewer
+
+![](https://github.com/ChrisMzz/fractal-art/blob/main/readme_dump/3D_view_1.png)
+
+![](https://github.com/ChrisMzz/fractal-art/blob/main/readme_dump/galaxystack.gif)
 
