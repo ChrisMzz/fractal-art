@@ -76,15 +76,15 @@ def global_params(thresh=100, resolution=256, order=10, save_location=pathlib.Pa
 viewer = napari.Viewer()
 
 @magicgui(
-    image1={'label':'Start Image'},
-    image2={'label':'End Image'},
+    main={'label':'Space Image'},
+    image={'label':'Single Image'},
     breaks={'value':20},
-    new_resolution={'value':1024, 'max':8192},
+    new_resolution={'value':256, 'max':8192},
 )
-def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=1024, ordertxt='rgb'):
+def lerp_images(main:Image, image:Image, breaks=20, new_resolution=256, ordertxt='rgb'):
     try:
-        arr1 = image1.metadata["arr"]
-        arr2 = image2.metadata["arr"]
+        main_img = main.metadata["arr"]
+        single_img = image.metadata["arr"]
     except:
         print("No array availbale")
         return
@@ -93,14 +93,12 @@ def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=1024, orde
         ordertxt = list('rgb')
         random.shuffle(ordertxt)
         ordertxt = ''.join(ordertxt)
-    arr_list = anim.lerp(arr1, arr2, breaks)
-    frames = []
-    for arr in progress(tqdm.tqdm(arr_list)):
-        img = frctl.julia_from_2Darray(arr, (new_resolution,new_resolution), frctl.parametric_cmap)
-        img = anim.colorswap(img, ordertxt)
-        img = (255*img).astype(np.uint8)
-        frames.append(img)
-    viewer.add_image(np.array(frames))
+    arr_list = anim.lerp_projector(main_img, single_img, breaks)
+
+    space = anim.fill(arr_list, new_resolution, ordertxt)
+    
+        
+    viewer.add_image(space)
     layer = viewer.layers[-1]
     layer.metadata["arr"] = arr_list
     layer.metadata["ordertxt"] = ordertxt
