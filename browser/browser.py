@@ -19,7 +19,7 @@ import random
 
 frctl.set_thresh(50)
 RESOLUTION = 256
-SAVE_LOCATION = 'dump/browser'
+SAVE_LOCATION = 'dump'
 ORDER = 11
 
 param_R = lambda t : 9*(1-t)*t**3
@@ -108,7 +108,7 @@ def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=1024, orde
     layer.name += ' - available arr'
 
 @magicgui(call_button='Load')
-def load_image_from_array(path=pathlib.Path(r'dump\browser\functions')):
+def load_image_from_array(path=pathlib.Path(r'dump\functions')):
     arr = np.load(path)
     ordertxt = list('rgb')
     random.shuffle(ordertxt)
