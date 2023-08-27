@@ -12,18 +12,16 @@ def random_function_array(order):
 def lerp(arr1, arr2, size):
     return [arr1*(1-t) + arr2*t for t in np.linspace(0,1,size)]
     
-def lerp_projector(main, new, size):
-    if len(new.shape) > 2:
-        temp = new
-        new = main
-        main = temp
-    if len(new.shape) > 2:
+def lerp_projector(space1, space2, size):
+    if space1.shape != space2.shape:
         return
-    if len(main.shape) == 2:
-        return np.array(lerp(main, new, size))
+    if len(space1.shape) == 2:
+        return np.array(lerp(space1, space2, size))
     space = []
-    for arr in main:
-        space.append(lerp_projector(arr, new, size))
+    for a in range(len(space1)):
+        arr1 = space1[a]
+        arr2 = space2[a]
+        space.append(lerp_projector(arr1, arr2, size))
     return np.array(space)
 
 

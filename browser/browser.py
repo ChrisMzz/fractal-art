@@ -76,15 +76,15 @@ def global_params(thresh=100, resolution=256, order=10, save_location=pathlib.Pa
 viewer = napari.Viewer()
 
 @magicgui(
-    main={'label':'Space Image'},
-    image={'label':'Single Image'},
+    image1={'label':'Image 1'},
+    image2={'label':'Image 2'},
     breaks={'value':20},
     new_resolution={'value':256, 'max':8192},
 )
-def lerp_images(main:Image, image:Image, breaks=20, new_resolution=256, ordertxt='rgb'):
+def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=256, ordertxt='rgb'):
     try:
-        main_img = main.metadata["arr"]
-        single_img = image.metadata["arr"]
+        img1 = image1.metadata["arr"]
+        img2 = image2.metadata["arr"]
     except:
         print("No array availbale")
         return
@@ -93,16 +93,12 @@ def lerp_images(main:Image, image:Image, breaks=20, new_resolution=256, ordertxt
         ordertxt = list('rgb')
         random.shuffle(ordertxt)
         ordertxt = ''.join(ordertxt)
-    arr_list = anim.lerp_projector(main_img, single_img, breaks)
-
-    space = anim.fill(arr_list, new_resolution, ordertxt)
-    
-        
+    arr_list = anim.lerp_projector(img1, img2, breaks) # make list of lerps to compute
+    space = anim.fill(arr_list, new_resolution, ordertxt) # compute julia set images of lerps into a new array
     viewer.add_image(space)
     layer = viewer.layers[-1]
     layer.metadata["arr"] = arr_list
     layer.metadata["ordertxt"] = ordertxt
-    
     layer.name += ' - available arr'
 
 @magicgui(call_button='Load')
@@ -176,7 +172,10 @@ def save_selected(v=viewer):
         if type(layer) != Image:
             continue
         np.save(f'{SAVE_LOCATION}/functions/{layer.name}.npy', layer.metadata["arr"])
-        io.imsave(f'{SAVE_LOCATION}/images/{layer.name}.png', layer.data)
+        try:
+            io.imsave(f'{SAVE_LOCATION}/images/{layer.name}.png', layer.data)
+        except: # image is not 2D
+            io.imsave(f'{SAVE_LOCATION}/images/{layer.name}.tif', layer.data)
 
 @viewer.bind_key('2', overwrite=True)
 def save_gif(v=viewer):
