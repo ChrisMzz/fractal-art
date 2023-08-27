@@ -1,6 +1,6 @@
 import napari
 from napari.layers import Image # for magicgui and selection error handling
-from napari.utils import progress
+from napari.utils import progress # still useful, not implemented in viewer window yet
 import tqdm
 from qtpy.QtWidgets import QPushButton, QMessageBox
 from magicgui import magicgui
@@ -94,7 +94,9 @@ def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=256, order
         random.shuffle(ordertxt)
         ordertxt = ''.join(ordertxt)
     arr_list = anim.lerp_projector(img1, img2, breaks) # make list of lerps to compute
-    space = anim.fill(arr_list, new_resolution, ordertxt) # compute julia set images of lerps into a new array
+    # thanks to https://stackoverflow.com/a/62109249/17091581
+    bar = tqdm.tqdm(total=np.zeros(arr_list.shape[:-2]).size)
+    space = anim.fill(arr_list, new_resolution, ordertxt, bar) # compute julia set images of lerps into a new array
     viewer.add_image(space)
     layer = viewer.layers[-1]
     layer.metadata["arr"] = arr_list

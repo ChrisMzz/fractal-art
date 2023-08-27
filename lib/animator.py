@@ -25,14 +25,15 @@ def lerp_projector(space1, space2, size):
     return np.array(space)
 
 
-def fill(arr_list, new_resolution, ordertxt):
+def fill(arr_list, new_resolution, ordertxt, progress_bar):
     dims = arr_list.shape[:-2]
     hyperplane = []
     if len(dims) > 1:
         for dim in range(dims[0]):
-            hyperplane.append(fill(arr_list[dim,], new_resolution, ordertxt))
+            hyperplane.append(fill(arr_list[dim,], new_resolution, ordertxt, progress_bar))
     else:
         for arr in arr_list:
+            progress_bar.update(1)
             img = frctl.julia_from_2Darray(arr, (new_resolution,new_resolution), frctl.parametric_cmap)
             img = colorswap(img, ordertxt)
             img = (255*img).astype(np.uint8)
