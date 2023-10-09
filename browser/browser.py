@@ -6,14 +6,14 @@ from qtpy.QtWidgets import QPushButton, QMessageBox
 from magicgui import magicgui
 import pathlib # to include paths in magicgui widgets
 from PIL import Image as pilimage
+from zipfile import ZipFile
+import sys, os, json
 
-import sys
 sys.path.insert(0, '../lib')
 import animator as anim
 import fractalize as frctl
 import utility as util
 import numpy as np
-import os
 from skimage import io
 import random
 
@@ -62,18 +62,38 @@ def viewer_next():
     resolution={'value':256, 'max':8192},
     order={'value':11, 'max':50},
     )
-def global_params(thresh=100, resolution=256, order=10, save_location=pathlib.Path('dump/browser')): 
+def global_params(thresh=100, resolution=256, order=10, save_location=pathlib.Path('dump')): 
     # default param values are necessary otherwise options don't display
     # but are insignificant as the default param values are overwritten
     # by the magicgui dict values (also necessary)
-    global RESOLUTION, SAVE_PATH, ORDER
+    global RESOLUTION, SAVE_LOCATION, ORDER
     frctl.set_thresh(thresh)
     RESOLUTION = resolution
-    SAVE_PATH = save_location
+    SAVE_LOCATION = save_location
     ORDER = order
 
 
 viewer = napari.Viewer()
+
+# to open files
+if len(sys.argv) > 1:
+    with ZipFile(sys.argv[1]) as zipfile:
+        metadata_file = open(zipfile.extract('metadata.json'))
+        metadata = json.load(metadata_file)
+        metadata_file.close()
+        os.remove(zipfile.extract('metadata.json'))
+        if metadata['format'] == 'tif':
+            viewer.add_image(io.imread(zipfile.extract('image.tif')), name=metadata['name'])
+            os.remove(zipfile.extract('image.tif'))
+        else:
+            viewer.add_image(io.imread(zipfile.extract('image.png')), name=metadata['name'])
+            os.remove(zipfile.extract('image.png'))
+        viewer.layers[-1].metadata["arr"] = np.load(zipfile.extract('function.npy'))
+        os.remove(zipfile.extract('function.npy'))
+        RESOLUTION, SAVE_LOCATION, ORDER = metadata["resolution"], metadata["save_location"], metadata["order"]
+    
+        
+
 
 @magicgui(
     image1={'label':'Image 1'},
@@ -96,6 +116,8 @@ def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=256, order
     arr_list = anim.lerp_projector(img1, img2, breaks) # make list of lerps to compute
     # thanks to https://stackoverflow.com/a/62109249/17091581
     bar = tqdm.tqdm(total=np.zeros(arr_list.shape[:-2]).size)
+    p_bar = progress(bar)
+    p_bar.display()
     space = anim.fill(arr_list, new_resolution, ordertxt, bar) # compute julia set images of lerps into a new array
     viewer.add_image(space)
     layer = viewer.layers[-1]
@@ -104,7 +126,7 @@ def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=256, order
     layer.name += ' - available arr'
 
 @magicgui(call_button='Load')
-def load_image_from_array(path=pathlib.Path(r'dump\functions')):
+def load_image_from_array(path=pathlib.Path(r'dump')):
     arr = np.load(path)
     ordertxt = list('rgb')
     random.shuffle(ordertxt)
@@ -168,16 +190,35 @@ def add_to_existing(v=viewer):
 
 @viewer.bind_key('1', overwrite=True)
 def save_selected(v=viewer):
+    global RESOLUTION, SAVE_LOCATION, ORDER
     if not v:
         v = viewer
     for layer in viewer.layers.selection:
         if type(layer) != Image:
             continue
-        np.save(f'{SAVE_LOCATION}/functions/{layer.name}.npy', layer.metadata["arr"])
+        np.save(f'function.npy', layer.metadata["arr"])
         try:
-            io.imsave(f'{SAVE_LOCATION}/images/{layer.name}.png', layer.data)
+            file_format = 'png'
+            io.imsave(f'image.png', layer.data)
         except: # image is not 2D
-            io.imsave(f'{SAVE_LOCATION}/images/{layer.name}.tif', layer.data)
+            file_format = 'tif'
+            io.imsave(f'image.tif', layer.data)
+        with open(f'metadata.json', 'w') as metadata:
+            json.dump({
+                "resolution":RESOLUTION, "order":ORDER, "save_location": SAVE_LOCATION,
+                "name":layer.name, "format":file_format}, metadata)
+        with ZipFile(f'{SAVE_LOCATION}/{layer.name}.frctl', 'w') as file:
+            file.write(f'function.npy')
+            file.write(f'image.{file_format}')
+            file.write(f'metadata.json')
+    os.remove('function.npy'), os.remove('metadata.json')
+    if os.path.exists('image.png'):os.remove('image.png')
+    if os.path.exists('image.tif'):os.remove('image.tif')
+    
+    
+    
+        
+        
 
 @viewer.bind_key('2', overwrite=True)
 def save_gif(v=viewer):

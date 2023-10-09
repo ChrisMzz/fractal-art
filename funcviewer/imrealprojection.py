@@ -1,7 +1,5 @@
-import sys
-sys.path.insert(0, '../lib')
-import utility as util
-import fractalize as frctl
+from ...lib import utility as util
+from ...lib import fractalize as frctl
 import matplotlib.pyplot as plt
 import numpy as np
 
