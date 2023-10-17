@@ -14,10 +14,12 @@ import animator as anim
 import fractalize as frctl
 import utility as util
 import numpy as np
+import matplotlib.pyplot as plt
 from skimage import io
 import random
 
-frctl.set_thresh(50)
+THRESH = 50
+frctl.set_thresh(THRESH)
 RESOLUTION = 256
 SAVE_LOCATION = 'dump'
 ORDER = 11
@@ -66,8 +68,9 @@ def global_params(thresh=100, resolution=256, order=10, save_location=pathlib.Pa
     # default param values are necessary otherwise options don't display
     # but are insignificant as the default param values are overwritten
     # by the magicgui dict values (also necessary)
-    global RESOLUTION, SAVE_LOCATION, ORDER
-    frctl.set_thresh(thresh)
+    global RESOLUTION, SAVE_LOCATION, ORDER, THRESH
+    THRESH = thresh
+    frctl.set_thresh(THRESH)
     RESOLUTION = resolution
     SAVE_LOCATION = save_location
     ORDER = order
@@ -179,7 +182,57 @@ def push_param_functions():
     except:
         return
 
-
+# saving my life : https://stackoverflow.com/a/7821917/17091581
+#@magicgui(call_button='Random Parametric Functions')
+@viewer.bind_key('r', overwrite=True)
+def random_param_functions(v=viewer):
+    if not v:
+        v = viewer
+    global param_R, param_G, param_B, THRESH
+    rlp, rrp, glp, grp, blp, brp = np.random.rand(6)*4.9+0.1
+    R = lambda t :  (1-t)**rrp*t**rlp
+    G = lambda t :  (1-t)**grp*t**glp
+    B = lambda t :  (1-t)**brp*t**blp
+    x = np.linspace(0,1,50)
+    rc, gc, bc = 1/max(R(x)), 1/max(G(x)), 1/max(B(x))
+    param_R = lambda t : rc*(1-t)**rrp*t**rlp
+    param_G = lambda t : gc*(1-t)**grp*t**glp
+    param_B = lambda t : bc*(1-t)**brp*t**blp
+    frctl.set_param('R', param_R)
+    frctl.set_param('G', param_G)
+    frctl.set_param('B', param_B)
+    
+    viewer.layers.clear()
+    viewer_next()
+    im = viewer.layers[-1].data
+    im = im.transpose(2,0,1)[0]*THRESH
+    res = frctl.parametric_cmap(None, im)
+    x = np.linspace(0,1,1000)
+    fig, [[axTL, axTR], [axBL, axBR]] = plt.subplots(2,2)
+    cmap = np.array([[[param_R(t), param_G(t), param_B(t)] for t in x] for _ in x])
+    axTL.plot(x, param_R(x), color='r')
+    axTL.plot(x, param_G(x), color='g')
+    axTL.plot(x, param_B(x), color='b')
+    axTL.plot(x, (param_R(x)+param_G(x)+param_B(x))/3, color=(0,0,0), linestyle=':')
+    axTL.set_title('RGB Colour Distribution')
+    axBL.plot(x, param_R(x)*param_G(x), color=(1,1,0))
+    axBL.plot(x, param_G(x)*param_B(x), color=(0,1,1))
+    axBL.plot(x, param_R(x)*param_B(x), color=(1,0,1))
+    axBL.plot(x, (param_R(x)+param_G(x)+param_B(x))/3, color=(0,0,0), linestyle=':')
+    axBL.set_title('CYM Colour Distribution')
+    axTR.imshow(cmap, extent=[0,1,0,1])
+    axTR.set_title('Colourmap Result')
+    axTL.set_ylim([0,1]), axBL.set_ylim([0,1])
+    axTR.set_yticklabels(''), axBR.set_xticklabels(''), axBR.set_yticklabels('')
+    axBR.imshow(res)
+    axBR.set_title('Result Image')
+    fig.set_figwidth(10)
+    fig.set_figheight(8)
+    fig.canvas.draw()
+    data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+    viewer.layers.clear()
+    viewer.add_image(data)
 
 @viewer.bind_key('0', overwrite=True)
 def add_to_existing(v=viewer):
