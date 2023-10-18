@@ -30,7 +30,8 @@ def plot_all_on_interval(arr, interval):
 
 if __name__ == "__main__":
 
-    arr = np.load(r'C:\Users\33783\OneDrive\Bureau\000Chris\Scolarité\Random Scripts\Python Scripts\fractal-art\browser\dump\browser\functions\spiral1.npy')
+    PATH = ""
+    arr = np.load(PATH)
 
     f = im_project(arr)
 

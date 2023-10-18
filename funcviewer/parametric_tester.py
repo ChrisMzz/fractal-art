@@ -5,7 +5,7 @@ import fractalize as frctl
 import matplotlib.pyplot as plt
 import numpy as np
 
-
+THRESH = 100
 # default functions here
 param_R = lambda t : 9*(1-t)*t**3
 param_G = lambda t : 15*((1-t)**2)*t**2
@@ -19,17 +19,21 @@ param_R = lambda t : 7.79*t**1.7*(1-t)**1.3
 param_G = lambda t : 10.18*t**2.8*(1-t)**1.1
 param_B = lambda t : 50.9*t**1.8*(1-t)**5
 
+param_R = lambda t : 23.339109597953968*(1-t)**1.3577621192171825*t**4.419374973381164
+param_G = lambda t : 49.302515165313665*(1-t)**2.2093047505737196*t**3.6829973145188593
+param_B = lambda t : 164.22350132890563*(1-t)**3.896044482692923*t**3.4803750374782845
 
 
 
 
+
+arr = np.array([[-0.5,0,1],[0.6,0,0]])
+[frctl.set_param(param, lambda t : t) for param in ['R', 'G', 'B']]
+im = frctl.julia_from_2Darray(arr, (1024,1024), coloring=frctl.parametric_cmap)
+im = im.transpose(2,0,1)[0]*THRESH
 frctl.set_param('R', param_R)
 frctl.set_param('G', param_G)
 frctl.set_param('B', param_B)
-
-im = imread(r'C:\Users\33783\OneDrive\Bureau\000Chris\Scolarité\Random Scripts\Python Scripts\fractal-art\browser\dump\browser\images\test11.png')
-im = im.transpose(2,0,1)[0]
-
 res = frctl.parametric_cmap(None, im)
 
 fig, [[axTL, axTR], [axBL, axBR]] = plt.subplots(2,2)
@@ -67,8 +71,8 @@ fig.set_figwidth(10)
 fig.set_figheight(8)
 
 
-#fig.savefig('example_params.png', dpi=300, format='png')
-plt.show()
+fig.savefig('report_params.png', dpi=300, format='png')
+#plt.show()
 
 
 
