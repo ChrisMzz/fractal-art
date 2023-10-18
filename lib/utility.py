@@ -39,11 +39,10 @@ if __name__ == '__main__':
     import fractalize as frctl
 
 
-    PATH_TO_FUNCTION = fr'C:\Users\33783\OneDrive\Bureau\000Chris\Scolarité\Random Scripts\Python Scripts\fractal-art\DATA\data_gen_test\training_data\functions\0.npy'
-
+    PATH = ""
     fig, (ax1, ax2) = plt.subplots(1,2)
 
-    image = frctl.julia_from_array(np.load(PATH_TO_FUNCTION))
+    image = frctl.julia_from_array(np.load(PATH))
     
     reg = regularize(image)
     ax1.imshow(image)
