@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 from skimage import io
 import random
 
+param_layer_message_shown = False
 THRESH = 50
 frctl.set_thresh(THRESH)
 RESOLUTION = 256
@@ -78,9 +79,9 @@ def global_params(thresh=100, resolution=256, order=10, save_location=pathlib.Pa
 
 viewer = napari.Viewer()
 
-# to open files
-if len(sys.argv) > 1:
-    with ZipFile(sys.argv[1]) as zipfile:
+def load_frctl(path):
+    global RESOLUTION, SAVE_LOCATION, ORDER
+    with ZipFile(path) as zipfile:
         metadata_file = open(zipfile.extract('metadata.json'))
         metadata = json.load(metadata_file)
         metadata_file.close()
@@ -95,7 +96,10 @@ if len(sys.argv) > 1:
         os.remove(zipfile.extract('function.npy'))
         RESOLUTION, SAVE_LOCATION, ORDER = metadata["resolution"], metadata["save_location"], metadata["order"]
     
-        
+
+# to open files
+if len(sys.argv) > 1:
+    load_frctl(sys.argv[1])
 
 
 @magicgui(
@@ -130,18 +134,24 @@ def lerp_images(image1:Image, image2:Image, breaks=20, new_resolution=256, order
 
 @magicgui(call_button='Load')
 def load_image_from_array(path=pathlib.Path(r'dump')):
-    arr = np.load(path)
-    ordertxt = list('rgb')
-    random.shuffle(ordertxt)
-    ordertxt = ''.join(ordertxt)
-    img = frctl.julia_from_2Darray(arr, (RESOLUTION,RESOLUTION), frctl.parametric_cmap)
-    img = anim.colorswap(img, ordertxt)
-    img = (255*img).astype(np.uint8)
-    viewer.add_image(img)
-    layer = viewer.layers[-1]
-    layer.metadata["arr"] = arr
-    layer.metadata["ordertxt"] = ordertxt
-    layer.name += ' - available arr'
+    #print(path.absolute().as_posix())
+    # thanks guys
+    # https://python-forum.io/thread-9077.html
+    if path.absolute().as_posix()[-3:] == 'npy':
+        arr = np.load(path)
+        ordertxt = list('rgb')
+        random.shuffle(ordertxt)
+        ordertxt = ''.join(ordertxt)
+        img = frctl.julia_from_2Darray(arr, (RESOLUTION,RESOLUTION), frctl.parametric_cmap)
+        img = anim.colorswap(img, ordertxt)
+        img = (255*img).astype(np.uint8)
+        viewer.add_image(img)
+        layer = viewer.layers[-1]
+        layer.metadata["arr"] = arr
+        layer.metadata["ordertxt"] = ordertxt
+        layer.name += ' - available arr'
+    elif path.absolute().as_posix()[-5:] == 'frctl':
+        load_frctl(path)
 
 @magicgui(
     image={'label':'Image'},
@@ -161,13 +171,6 @@ def enhance(image:Image, new_resolution=1024):
 
 
 
-@magicgui(call_button='Make New Parametric Functions Layer')
-def make_param_functions_layer():
-    viewer.add_image(np.zeros((2,2)))
-    instructions = QMessageBox()
-    instructions.setText('Make a New Parametric Functions layer.\n\nIn the napari console, set your `param_R`, `param_G`, and `param_B` functions into the `viewer.layers[-1].metadata` dictionary.\n\nExample : \n`viewer.layers[-1].metadata["param_R"] = lambda t : 9*(1-t)*t**3`\n\nMake sure this layer is at the top of the layers list before you push the new parametric functions.')
-    instructions.setWindowTitle('Instructions')
-    instructions.exec()
 
 
 @magicgui(call_button='Push New Parametric Functions')
@@ -186,6 +189,7 @@ def push_param_functions():
 #@magicgui(call_button='Random Parametric Functions')
 @viewer.bind_key('r', overwrite=True)
 def random_param_functions(v=viewer):
+    global param_layer_message_shown
     if not v:
         v = viewer
     global param_R, param_G, param_B, THRESH
@@ -233,6 +237,12 @@ def random_param_functions(v=viewer):
     data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
     viewer.layers.clear()
     viewer.add_image(data)
+    if not param_layer_message_shown:
+        instructions = QMessageBox()
+        instructions.setText('Just made a New Parametric Functions layer.\n\nIn the napari console, set your `param_R`, `param_G`, and `param_B` functions into the `viewer.layers[-1].metadata` dictionary if you want to set those manually.\n\nExample : \n`viewer.layers[-1].metadata["param_R"] = lambda t : 9*(1-t)*t**3`\n\nMake sure this layer is at the top of the layers list before you push the new parametric functions.')
+        instructions.setWindowTitle('Instructions')
+        instructions.exec()
+        param_layer_message_shown = True
 
 @viewer.bind_key('0', overwrite=True)
 def add_to_existing(v=viewer):
@@ -298,11 +308,14 @@ add_button.clicked.connect(add_to_existing)
 save_button = QPushButton('Save seletected images and arrays (1)')
 save_button.clicked.connect(save_selected)
 
-save_gif_button = QPushButton('Save seletected stack (2)')
+save_gif_button = QPushButton('Save seletected as GIF (2)')
 save_gif_button.clicked.connect(save_gif)
 
 clear_button = QPushButton('Clear all images (3)')
 clear_button.clicked.connect(clear_all)
+
+random_param_button = QPushButton('Make random parametric functions layer (r)')
+random_param_button.clicked.connect(random_param_functions)
 
 
 list_buttons = [add_button, save_button, save_gif_button, clear_button]
@@ -312,7 +325,7 @@ viewer.window.add_dock_widget(load_image_from_array,area = 'right', name='Load I
 viewer.window.add_dock_widget(enhance,area = 'right', name='Enhance Image')
 viewer.window.add_dock_widget(lerp_images,area = 'right', name='Lerp Images')
 viewer.window.add_dock_widget(list_buttons,area = 'bottom')
-viewer.window.add_dock_widget(make_param_functions_layer, area = 'bottom')
+viewer.window.add_dock_widget(random_param_button, area = 'bottom')
 viewer.window.add_dock_widget(push_param_functions, area = 'bottom')
 
 
