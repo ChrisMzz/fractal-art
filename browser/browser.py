@@ -209,7 +209,7 @@ def random_param_functions(v=viewer):
     viewer.layers.clear()
     viewer_next()
     im = viewer.layers[-1].data
-    im = im.transpose(2,0,1)[0]*THRESH
+    im = im.transpose(2,0,1)[0]/255 # layer data is array where values are in [0,255]
     res = frctl.parametric_cmap(None, im)
     x = np.linspace(0,1,1000)
     fig, [[axTL, axTR], [axBL, axBR]] = plt.subplots(2,2)
