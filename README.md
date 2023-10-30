@@ -42,6 +42,12 @@ pip install numpy
 ```
 I also use `pathlib`, but that comes built into Python versions >= 3.4, so make sure your Python version includes `pathlib`.
 
+#### For the fractal viewer 
+
+To run the fractal viewer with Python, you'll need : 
+
+`pygame` (versions 2.0.1 and up), and `PyOpenGL`, both installable with pip.
+
 
 ### How to use
 
@@ -65,7 +71,8 @@ You can lerp two images of same shape together using the lerp widget, which yiel
 
 You can save images as `.frctl` files ( a "fractal file" containing metadata, array data and the actual image).
 You can then load `.npy` or `.frctl` files (`npy` files need to be arrays of shape `(2,n)` representing a Taylor expansion of the function of order $n$, separating real and imaginary parts).
-`frctl` files can also be opened outside of the browser, opening them if it's through the executable, but to set this as default, either use the `reg` key generator or set it yourself.
+`frctl` files can also be opened outside of the browser, you can open them using the explorer executable or the browser executable. I recommend setting the explorer executable as the default application.
+*If you want to set the explorer executable as the default application for these in the **Windows** registry, I included a regkey file in this repository where you only have to change `%directory%` to the directory in which the executable is.*
 
 Of course, if you like a function but don't want to save it, just view it in higher resolution (or lower resolution), you can "enhance" a selected image.
 
