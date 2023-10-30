@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\.frctl]
+[HKEY_CLASSES_ROOT\.frctl\shell]
+[HKEY_CLASSES_ROOT\.frctl\shell\open]
+[HKEY_CLASSES_ROOT\.frctl\shell\open\command]
+@="\"%directory%/frctlexplorer.exe/" \"%1\""
