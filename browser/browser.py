@@ -28,6 +28,11 @@ ORDER = 11
 param_R = lambda t : 9*(1-t)*t**3
 param_G = lambda t : 15*((1-t)**2)*t**2
 param_B = lambda t : 8.5*((1-t)**3)*t
+cmap_dict = {
+    "rc":9, "gc":15, "bc":8.5,
+    "rlp":3, "glp":2, "blp":1,
+    "rrp":1, "grp":2, "brp":3
+}
 
 # from https://theses.liacs.nl/pdf/2018-2019-JonckheereLSde.pdf
 
@@ -85,6 +90,16 @@ def load_frctl(path):
         metadata_file = open(zipfile.extract('metadata.json'))
         metadata = json.load(metadata_file)
         metadata_file.close()
+        rlp, rrp, glp, grp, blp, brp = [float(metadata["cmap_dict"][key]) for key in 
+                                        ("rlp", "rrp", "glp", "grp", "blp", 'brp')]
+        rc, gc, bc = [float(metadata["cmap_dict"][key]) for key in ("rc","gc","bc")]
+        R, G, B = (rc, rlp, rrp), (gc, glp, grp), (bc, blp, brp)
+        temp_param = []
+        for canal in metadata["ordertxt"]:
+            if canal == "r" or canal == "R": temp_param.append(R)
+            if canal == "g" or canal == "G": temp_param.append(G)
+            if canal == "b" or canal == "B": temp_param.append(B)
+        (rc, rlp, rrp), (gc, glp, grp), (bc, blp, brp) = temp_param
         os.remove(zipfile.extract('metadata.json'))
         if metadata['format'] == 'tif':
             viewer.add_image(io.imread(zipfile.extract('image.tif')), name=metadata['name'])
@@ -94,7 +109,7 @@ def load_frctl(path):
             os.remove(zipfile.extract('image.png'))
         viewer.layers[-1].metadata["arr"] = np.load(zipfile.extract('function.npy'))
         os.remove(zipfile.extract('function.npy'))
-        RESOLUTION, SAVE_LOCATION, ORDER = metadata["resolution"], metadata["save_location"], metadata["order"]
+        RESOLUTION, ORDER = metadata["resolution"], metadata["order"]
     
 
 # to open files
@@ -189,7 +204,7 @@ def push_param_functions():
 #@magicgui(call_button='Random Parametric Functions')
 @viewer.bind_key('r', overwrite=True)
 def random_param_functions(v=viewer):
-    global param_layer_message_shown
+    global param_layer_message_shown, cmap_dict
     if not v:
         v = viewer
     global param_R, param_G, param_B, THRESH
@@ -202,6 +217,9 @@ def random_param_functions(v=viewer):
     param_R = lambda t : rc*(1-t)**rrp*t**rlp
     param_G = lambda t : gc*(1-t)**grp*t**glp
     param_B = lambda t : bc*(1-t)**brp*t**blp
+    cmap_dict["rc"], cmap_dict["gc"], cmap_dict["bc"] = rc, gc, bc
+    cmap_dict["rlp"], cmap_dict["glp"], cmap_dict["blp"] = rlp, glp, blp
+    cmap_dict["rrp"], cmap_dict["grp"], cmap_dict["brp"] = rrp, grp, brp
     frctl.set_param('R', param_R)
     frctl.set_param('G', param_G)
     frctl.set_param('B', param_B)
@@ -253,7 +271,7 @@ def add_to_existing(v=viewer):
 
 @viewer.bind_key('1', overwrite=True)
 def save_selected(v=viewer):
-    global RESOLUTION, SAVE_LOCATION, ORDER
+    global RESOLUTION, SAVE_LOCATION, ORDER, cmap_dict
     if not v:
         v = viewer
     for layer in viewer.layers.selection:
@@ -268,7 +286,9 @@ def save_selected(v=viewer):
             io.imsave(f'image.tif', layer.data)
         with open(f'metadata.json', 'w') as metadata:
             json.dump({
-                "resolution":RESOLUTION, "order":ORDER, "save_location": SAVE_LOCATION,
+                "cmap_dict":cmap_dict,
+                "ordertxt":layer.metadata["ordertxt"],
+                "resolution":RESOLUTION, "order":ORDER, 
                 "name":layer.name, "format":file_format}, metadata)
         with ZipFile(f'{SAVE_LOCATION}/{layer.name}.frctl', 'w') as file:
             file.write(f'function.npy')
