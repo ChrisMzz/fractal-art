@@ -7,6 +7,7 @@ from zipfile import ZipFile
 import sys, json, os
 
 def load(path) -> CustomFrctl:
+    os.chdir(sys.argv[0][:-17])
     with ZipFile(path) as zipfile:
         metadata_file = open(zipfile.extract('metadata.json'))
         metadata = json.load(metadata_file)
@@ -40,7 +41,7 @@ class FractalViewer(PyOGLApp):
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        with open(os.path.join("shaders","frag_frctl.glsl"), "w") as fp:
+        with open(sys.argv[0][:-17] + "shaders\\frag_frctl.glsl", "w") as fp:
             fp.write(load(sys.argv[1]).parse())
     
     pygame.init()
