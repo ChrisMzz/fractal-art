@@ -39,7 +39,7 @@ cmap_dict = {
 
 def func_gen():
     while True: # I'm so sorry
-        yield anim.random_function_array(ORDER)
+        yield anim.random_function_array(ORDER+1) # n-th order series expansion has n+1 terms
 
 gene = func_gen()
 
