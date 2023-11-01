@@ -45,7 +45,7 @@ class FractalViewer(PyOGLApp):
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         frctl = load(sys.argv[1])
-        os.chdir(CWD), os.chdir(os.path.abspath(sys.argv[0][:-16])) # sets cwd to executable / python filepath
+        os.chdir(CWD), os.chdir(os.path.abspath(sys.argv[0][:-17])) # sets cwd to executable / python filepath
         with open("shaders\\frag_frctl.glsl", "w") as fp:
             fp.write(frctl.parse())
     
