@@ -55,13 +55,18 @@ class PyOGLApp():
                 pygame.display.toggle_fullscreen()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                 paused = bool(1-paused)
-            if event.type == pygame.KEYDOWN: # press arrow keys or screenshot
+            if event.type == pygame.KEYDOWN: # press arrow keys, screenshot, or c
                 if event.key == pygame.K_RIGHT:
                     speed = 2
                 elif event.key == pygame.K_LEFT:
                     speed = 1/2
                 if event.key == pygame.K_LCTRL:
                     slowed = True
+                if event.key == pygame.K_c:
+                    colouring = np.random.randint(0,9)
+                    while colouring == self.colouring:
+                        colouring = np.random.randint(0,9)
+                    self.update_colouring(colouring)
                 if event.key == pygame.K_F12: # ~~find way to resize when taking screenshot~~ (not viable)
                     filepath = self.screenshot_path + '/'
                     screenshot_time = gmtime()
@@ -81,9 +86,9 @@ class PyOGLApp():
                     w,h = pygame.mouse.get_pos()
                     print(((w/self.screen_width)*2-1)*2*self.zoom_amount*(self.screen_width/(2*self.screen_height))+self.center[0], (((-h/self.screen_height)+1)*2-1)*self.zoom_amount+self.center[1])
                 if event.button == 2: # middle click
-                    colouring = np.random.randint(0,8)
+                    colouring = np.random.randint(0,9)
                     while colouring == self.colouring:
-                        colouring = np.random.randint(0,8)
+                        colouring = np.random.randint(0,9)
                     self.update_colouring(colouring)
             if event.type == pygame.KEYUP: # release arrow keys
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
@@ -130,6 +135,8 @@ class PyOGLApp():
                 speed = 1
                 self.display(ticks)
                 pygame.display.flip()
+                if not running:
+                    pygame.quit()
                 if not paused:
                     time_paused = (pygame.time.get_ticks()*0.002 - ticks + origin - slowed_amount)
             self.display(ticks)

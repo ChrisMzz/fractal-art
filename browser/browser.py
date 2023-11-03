@@ -23,7 +23,7 @@ THRESH = 50
 frctl.set_thresh(THRESH)
 RESOLUTION = 256
 SAVE_LOCATION = 'dump'
-ORDER = 11
+ORDER = 6
 
 param_R = lambda t : 9*(1-t)*t**3
 param_G = lambda t : 15*((1-t)**2)*t**2
@@ -68,9 +68,9 @@ def viewer_next():
     call_button='Set New Parameters',
     thresh={'value':100, 'max':500},
     resolution={'value':256, 'max':8192},
-    order={'value':11, 'max':50},
+    order={'value':6, 'max':50},
     )
-def global_params(thresh=100, resolution=256, order=10, save_location=pathlib.Path('dump')): 
+def global_params(thresh=100, resolution=256, order=6, save_location=pathlib.Path('dump')): 
     # default param values are necessary otherwise options don't display
     # but are insignificant as the default param values are overwritten
     # by the magicgui dict values (also necessary)
