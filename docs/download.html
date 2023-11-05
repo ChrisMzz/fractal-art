@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<head>
+    <title>Fractal Art - Download</title>
+    <link rel="stylesheet" href="website.css">
+    <link rel="icon" href="images/favicon.ico">
+
+</head>
+
+
+<body>
+    <script src="header.js"></script>
+    <br>
+
+    <div class="row">
+        <div class="column" style="float:left;width:33%">
+            <img src="images/download.PNG" style="width:-webkit-fill-available;border:solid;border-width:thin;"><br>
+            <img src="images/downloadb.PNG" style="width:-webkit-fill-available;border:solid;border-width:thin;"><br>
+            
+        </div>
+        <div class="column" style="float:right;width:66%;display:flex;flex-direction:column;align-items:center;">
+            <p>The <code>browser</code> and <code>frctlexplorer</code> are currently only available for Windows as executables, but 
+            the source code is available <a href="https://github.com/ChrisMzz/fractal-art">in this project's repository</a> and 
+            shouldn't have any problem running on other operating systems so long as the necessary packages are installed for Python.<br>
+            <br>
+            If your computer's running Windows OS, click on the button below to install the latest release of the app.</p>
+            <br>
+            <div id="download-button">
+            <script>
+                fetch("https://api.github.com/repos/ChrisMzz/fractal-art/releases/latest").then(
+                (response) => response.json())
+                .then((json) => document.getElementById("download-button").innerHTML = ('<a href="' + (json["assets"][0]["browser_download_url"]) +'" style="border:solid;border-width:thin;background-image:url(\'images/downloadbutton.gif\');padding-top:20px;padding-bottom:20px;padding-left:30px;padding-right:30px;text-decoration:none;color:white;border-radius: 10px;font-family: Arial, Helvetica, sans-serif;">Download</a>'));
+                document.write()
+            </script>
+            </div>
+            <br><br>
+            <p>For release notes and source code of the latest version, see <a href="https://github.com/ChrisMzz/fractal-art/releases/latest">here</a>.</p>
+            <!-- Explain what the point of the browser is, and what it amounts to doing -->
+        </div>
+
+</body>

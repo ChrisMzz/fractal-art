@@ -1,0 +1,64 @@
+  
+p {
+    font-family: Verdana, sans-serif;
+}
+
+
+header {
+    background-image:url("images/header.gif");
+    padding:10px;
+}
+
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  .navbar {
+    overflow: hidden;
+    position:absolute;
+    width: 100%;
+}
+
+.navbar span {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding-left: 50px;
+    padding-right: 15px;
+    padding-top:15px;
+    text-decoration: none;
+    font-size: 20px;
+    font-family:'Courier New', Courier, monospace;
+    font-weight:bold;
+}
+
+.topnav {
+overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+float: left;
+color: #f2f2f2;
+text-align: center;
+padding-left: 15px;
+padding-right: 15px;
+text-decoration: none;
+font-size: 20px;
+}
+
+.topnav span {
+float: left;
+color: #f2f2f2;
+text-align: center;
+padding-left: 50px;
+padding-right: 15px;
+padding-top:15px;
+text-decoration: none;
+font-size: 20px;
+font-family:'Courier New', Courier, monospace;
+font-weight:bold;
+}
+
