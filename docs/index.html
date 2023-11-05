@@ -7,28 +7,56 @@
 </head>
 
 <body>
-    <script src="header.js"></script>
+    <script src="header.js"></script> <!-- header with links to repo, download page (self), manual -->
     <br>
-    <!-- header with links to repo, download page (self), manual -->
+    
 
-    <!-- Intoduction paragraph -->
+    <p>
+        This is <strong>Fractal Art</strong>, a collection of Python-based programs I wrote to view semi-randomized fractals.<br>
+        <br>
+        The contents of this collection are : a "browser" built over the <code>napari</code> package, and a "frctlexplorer" I wrote in the <code>pygame</code> package.<br>
+        <br>
+        These docs are unfinished, so some parts of the website are currently empty.<br>
 
-    <div class="row">
-        <div class="column" style="float:left;width:33%">
-            <img src="images/browserinuse.PNG" style="width:-webkit-fill-available;border:solid;border-width:thin;">
+    </p>
+    <div style="background-image:linear-gradient(to top, rgb(200, 219, 241), rgb(246, 204, 235))">
+        <div class="row">
+            <div class="column" style="float:left;width:33%">
+                <img src="images/browserinuse.PNG" style="width:-webkit-fill-available;border:solid;border-width:thin;">
+            </div>
+            <div class="column" style="float:right;width:66%">
+                <p>
+                    The browser is designed to generate random-ish functions as series expansions to a given order, and is able to
+                    display the "Julia sets" of these functions, at a given square resolution. Technically, what's displayed on screen is more of 
+                    an approximation of the Fatou components of the function. If you don't know what these are, there are details about it in the manual.<br>
+                    <br>
+                    The computations leading to such approximates are mostly done with <code>numpy</code> vectorization, so it can get CPU 
+                    heavy real quick at not so high resolutions. I'd advise only using the browser to <i>find</i> interesting functions, and 
+                    then view them using the explorer.
+                </p>
+                <!-- Explain what the point of the browser is, and what it amounts to doing -->
+            </div>
         </div>
-        <div class="column" style="float:right;width:66%">
-            insert text here
-            <!-- Explain what the point of the browser is, and what it amounts to doing -->
-        </div>
-    </div>
-    <div class="row">
-        <div class="column" style="float:left;width:66%">
-            insert text here
-            <!-- Explain how the image can be saved and later viewed in frctlexplorer -->
-        </div>
-        <div class="column" style="float:right;width:33%">
-            <img src="images/websiteF.png" style="width:-webkit-fill-available;border:solid;border-width:thin;">
+        <div class="row">
+            <div class="column" style="float:left;width:66%">
+                <p>
+                    The frctlexplorer is designed to view <code>.frctl</code> files exported directly from the browser. A <code>.frctl</code> file
+                    only contains the image at export time, the function's NumPy array, and metadata such as the colourmap or series expansion order.<br>
+                    <br>
+                    The computations in the frctlexplorer are done by a GLSL fragment shader that is directly available to the users, to allow
+                    customisation of the shader computations for GLSL afficionados. Some lines of code are commented out in this one, precisely
+                    to make this task easier on users who want to expirement, such as a comment containing a mouse-controlled complex variable
+                    <code>c</code> that can be placed anywhere in the function's definition, or <code>hls</code>-compatible functionalities.<br>
+                    <br>
+                    These are obviously a lot easier on the computer since they're handled by the GPU. However, the default use for the <code>iTime</code>
+                    uniform is <strong>iteration count</strong>, so the long the program runs without pausing, the slower it'll get. <strong>Please</strong>
+                    be wary of this and press pause (P) when you think the program is starting to get too slow.
+                </p>
+                <!-- Explain how the image can be saved and later viewed in frctlexplorer -->
+            </div>
+            <div class="column" style="float:right;width:33%">
+                <img src="images/websiteF.png" style="width:-webkit-fill-available;border:solid;border-width:thin;">
+            </div>
         </div>
     </div>
     <p>
@@ -44,7 +72,7 @@
         </div>
     </div>
     <p>
-        Actually generating these isn't very hard, as I tried designing the browser to be as easy to use as possible. Of course, there are 
+        Actually generating these isn't very hard on the user, as I tried designing the browser to be as easy to use as possible. Of course, there are 
         more complicated features than what I'm advertising here, but you don't need more than this to get some really lovely images. <br>
         Saving the selected image and layer exports to a <code>.frctl</code> file that you can explore as shown above.
     </p>
