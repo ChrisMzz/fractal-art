@@ -28,7 +28,7 @@
             <script>
                 fetch("https://api.github.com/repos/ChrisMzz/fractal-art/releases/latest").then(
                 (response) => response.json())
-                .then((json) => document.getElementById("download-button").innerHTML = ('<a href="' + (json["assets"][0]["browser_download_url"]) +'" style="border:solid;border-width:thin;background-image:url(\'images/downloadbutton.gif\');padding-top:20px;padding-bottom:20px;padding-left:30px;padding-right:30px;text-decoration:none;color:white;border-radius: 10px;font-family: Arial, Helvetica, sans-serif;">Download</a>'));
+                .then((json) => document.getElementById("download-button").innerHTML = ('<a href="' + (json["assets"][0]["browser_download_url"]) +'" style="border:solid;border-width:thin;background-image:url(\'images/downloadbutton.gif\');padding-top:20px;padding-bottom:20px;padding-left:30px;padding-right:30px;text-decoration:none;color:white;border-radius: 10px;font-family: Arial, Helvetica, sans-serif;">' + (json["assets"][0]["name"]) + '</a>'));
                 document.write()
             </script>
             </div>
