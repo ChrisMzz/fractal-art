@@ -133,6 +133,7 @@ Here is an example of a lerp between a function generated with the browser, give
 the third order, and separately $f: z \mapsto z^2$, and $g: z \mapsto z^3$.
 It's easy to verify that the Julia sets of these last two functions are equal since $f \circ g = g \circ f$.
 Specifically, they correspond to the unit ball for the standard norm on $\mathbb{C}$.
+
 ![](https://github.com/ChrisMzz/fractal-art/blob/main/readme_dump/dysfunctional_lerp.gif)
 
 We can actually compute the lerp between $f$ and $g$, just to see how that looks : 
