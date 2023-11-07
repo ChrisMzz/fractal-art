@@ -9,7 +9,7 @@ However, that doesn't stop us from appreciating how weird-looking some sets are,
 
 I also wanted to see if we could train a neural network to find functions that look like certain shapes ? But that didn't pan out too well, probably because I'm new to neural networks overall (help will be appreciated greatly!).
 
-## Browser
+## `browser`
 
 Here, I'll explain everything you need to know about the browser.
 
@@ -96,7 +96,35 @@ The parametric functions representing the colourmaps are also shuffled for more 
 
 ![](https://github.com/ChrisMzz/fractal-art/blob/main/readme_dump/galaxystack.gif)
 
-### Napari N-dimensional Projection Viewer
+## `frctlexplorer`
+
+The `frctlexplorer` allows you to explore the representation of the Fatou domains of your saved `.frctl` files in a PyGame window. The view is computed using a GLSL fragment shader, so it's more efficient than the browser on precision alone.
+
+### Dependencies (for development)
+
+- PyGame v2.0.1 or higher, install with
+```bat
+pip install pygame
+```
+- PyOpenGL, install with
+```bat
+pip install pygame
+```
+
+
+### How to use
+
+Controls : 
+ - Left/Right arrow keys : backward in time, fast forward respectively
+ - LeftCtrl : slow down time
+ - P : Pause
+ - Mouse Left click : display position in complex plane
+ - Mouse scroll : zoom in/out
+ - C : change cmap (out of 8 available ones + exported cmap)
+ - F11 : fullscreen
+ - F12 : take screenshot (named `YYYYMMddhhmmss` based on current time)
+
+
 
 
 
