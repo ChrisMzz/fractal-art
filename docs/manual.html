@@ -9,6 +9,81 @@
     <script src="header.js"></script>
     <br>
 
-Currently working on an exhaustive user manual to fill this spot.
+    <h2>The browser</h2>
+    <p>The browser can be used to find new random functions. The functions are given by <code>(2,n)</code>
+        NumPy arrays, representing the series expansion of the function to the n-th order.<br><br>
+        Use the bottom widget buttons or press on the keys associated to them to : </p>
+        <ul>
+            <li>Make a new image (NumPad0)</li>
+            <li>Save selected layers as <code>.frctl</code> file in the current save directory (NumPad1)</li>
+            <li>Save a gif, only if layer is a 1D lerp (NumPad2)</li>
+            <li>Clear all layers (NumPad3)</li>
+            <li>Generate a new cmap, with parametric functions layer (R)</li>
+        </ul>
+        <p>You can also open the console at any time (<code>Ctrl+Shift+C</code>), select any layer, modify the
+        parametric functions manually and with the layer still selected, click on "Push New Parametric Functions"
+        to change the current cmap manually.<br><br>
+        The command line you could type if you select the topmost layer is for example 
+        <code>[layers[-1].metadata[param] = f for f,param in zip([r,g,b],["param_R","param_G","param_B"])]</code>
+        where <code>r</code>, <code>g</code>, and <code>b</code> are lambda functions of one variable defined in [0,1]
+        representing the new parametric functions.
+        </p>
+        <div class="row" style="display:flex;align-items: center;">
+            <div class="column" style="float:left;width:32%">
+                <img src="images/mainwidgets.PNG" style="width:-webkit-fill-available;border:solid;border-width:thin;">
+            </div>
+            <div class="column" style="float:right;width:65%;padding-left:7px">
+                
+                <p> The "Global Parameters" widget can be used to determine the order of the function's series expansion,
+                    but also to determine the <code>thresh</code> which limits how many iterates are computed to approximate 
+                    the Julia set, and the square <code>resolution</code> of the image, and finally the 
+                    <code>save location</code> which the <code>.frctl</code> file is exported to.<br>
+                    <br>
+                    <br>
+                    You can use the "Load Image From Array" widget to import a previously saved image, either as a
+                    <code>.npy</code> file of the function array or preferrably a <code>.frctl</code> file.<br>
+                    <br>
+                    <br>
+                    You can of course enhance an image to a higher (or lower) resolution with the "Enhance Image" 
+                    widget, by selecting the layer containing the image you want to enhance. Keep in mind this 
+                    recalculates the whole image from the array so it can take some time if you choose high resolutions.<br>
+                    If you want a less precise, but higher resolution image, you can always lower the iteration threshold
+                    in the Global Settings.
+                </p>
+            
+            </div>
+
+        </div>
+        <br>
+        <div class="row" style="display:flex;align-items:center">
+            <div class="column" style="float:left;width:66%">
+                
+                <p> The "Lerp Images" widget allows users to compute a discretisation of the linear interpolation
+                    between two layers. The layers' arrays must be of <strong>exact</strong> same shape and the 
+                    discretisation is done on [0,1] to exclude functions not strictly "in between" the two given 
+                    layers. The resulting layer is of shape <code>(breaks,)+shape</code> where <code>shape</code>
+                    is the shape of the given arrays and <code>breaks</code> is the discrete step provided in the 
+                    lerp settings.<br>
+                    <br>
+                    <br>
+                    Note that the <code>ordertxt</code> variable rearranges the cmap parametric 
+                    functions, so if you want to just rearrange these on any image you can just lerp an image with 
+                    itself and set the breaks to 1.<br>
+                    <br>
+                    <br>
+                    Once you've lerped multiple times, you can retrieve an image using the console. I didn't include
+                    a button for this as it's better done with custom preferences. Typically, to retrieve the image 
+                    at (7,19) of a 2D-lerp (lerping lerps), and taking ordertxt to be "bgr", you'd have to write :<br>
+                    <code>viewer.add_image(viewer.layers[-1].data[7,19],metadata={"ordertxt":"bgr","arr":viewer.layers[-1].metadata["arr"][7,19]})</code><br>
+                    You can then name the new layer however you want and save it as a <code>.frctl</code> file.
+                </p>
+            </div>
+            <div class="column" style="float:right;width:33%">
+                <img src="images/lerpwidget.PNG" style="width:-webkit-fill-available;border:solid;border-width:thin;">
+            </div>
+        </div>
+
+    
+
 
 </body>
