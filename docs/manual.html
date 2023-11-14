@@ -10,6 +10,7 @@
     <br>
 
     <h2>The browser</h2>
+    <div>
     <p>The browser can be used to find new random functions. The functions are given by <code>(2,n)</code>
         NumPy arrays, representing the series expansion of the function to the n-th order.<br><br>
         Use the bottom widget buttons or press on the keys associated to them to : </p>
@@ -82,7 +83,30 @@
                 <img src="images/lerpwidget.PNG" style="width:-webkit-fill-available;border:solid;border-width:thin;">
             </div>
         </div>
+    </div>
+    <h2>The explorer</h2>
+    <div>
+        <p>
+        The frctlexplorer can be used to view high-resolution details of the Fatou component approximates generated from a function.<br>
+        It should be used as the <strong>default app</strong> to open <code>.frctl</code> files, and can also be opened
+        standalone to view the last opened file.<br><br>
+        Use the following controls :
+        </p>
+        <ul>
+            <li>Right arrow key (hold) : speed up Time (time controls iteration limit by default)</li>
+            <li>Left arrow key (hold) : reverse Time</li>
+            <li>Left Ctrl (hold) : slow down Time</li>
+            <li>P : Pause</li>
+            <li>C or Middle Click : Change colour map (random between a select few maps)</li>
+            <li>F11 : Fullscreen</li>
+            <li>F12 : Screenshot (saves to folder where the instance was launched)</li>
+        </ul>
+        <p>The graphics are custom-controlled by the Python program through the GLSL fragment shader generated on <code>.frctl</code> file open.
+            Users can of course close the instance, modify the fragment shader and open the application standalone to experiment.<br><br>
+            A couple handcrafted, interesting variables are in the GLSL shader by default, commented out for you to find and try out if you don't know much about shaders.
+        </p>
 
+    </div>
     
 
 
