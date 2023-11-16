@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from colorsys import hls_to_rgb
-import pdb
 
 pi = np.pi
 e = np.exp(1)
@@ -100,24 +99,6 @@ def julia_from_array(arr, shape=(512,512), coloring=bw_coloring):
     return coloring(z, esc)
 
 
-if __name__ == '__main__':
-    import utility
-    from skimage import io
-    #func_arr = [[-0.8,0,1],[0.156,0,0]]
-    #sinus = lambda x : [(0,1)[n%2==1]*(-1,1)[n%4==1]*x**n/utility.factorial(n) for n in range(11)]
-    #print(sinus(1))
-    #func_arr = [sinus(1),[0 for _ in range(11)]]
-    #plt.plot(np.linspace(0,8,1000),polynomialize(array_to_complex(func_arr))(np.linspace(0,8,1000)))
-    #plt.show()
-    
-    func_arr = [1-2*np.random.rand(11), 1-2*np.random.rand(11)]
-    
-    image = julia_from_2Darray(func_arr, (1024,1024), coloring=parametric_cmap)
-    #image = utility.set_nan_to_zero(image)
-    plt.imshow(image)
-    plt.show()
-    io.imsave("itsabwok.png", image)
-    
 
 
 

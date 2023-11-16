@@ -5,14 +5,14 @@ import tqdm
 from qtpy.QtWidgets import QPushButton, QMessageBox
 from magicgui import magicgui
 import pathlib # to include paths in magicgui widgets
-from PIL import Image as pilimage
+try: from PIL import Image as pilimage
+except: print("Warning : didn't find PIL, saving a GIF will not work.")
 from zipfile import ZipFile
 import sys, os, json
 
 sys.path.insert(0, '../lib')
 import animator as anim
 import fractalize as frctl
-import utility as util
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import io
