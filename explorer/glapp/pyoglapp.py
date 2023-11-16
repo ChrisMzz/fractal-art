@@ -55,7 +55,7 @@ class PyOGLApp():
                 pygame.display.toggle_fullscreen()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                 paused = bool(1-paused)
-            if event.type == pygame.KEYDOWN: # press arrow keys, screenshot, or c
+            if event.type == pygame.KEYDOWN: # press arrow keys, screenshot, c or r
                 if event.key == pygame.K_RIGHT:
                     speed = 2
                 elif event.key == pygame.K_LEFT:
@@ -75,11 +75,21 @@ class PyOGLApp():
                     filepath += '.png'
                     buffer = glReadPixels(0, 0, self.screen_width, self.screen_height, GL_RGBA, GL_UNSIGNED_BYTE)
                     pygame.image.save(pygame.transform.flip(pygame.image.fromstring(buffer, (self.screen_width, self.screen_height), "RGBA"), False, True), filepath)
+                if event.key == pygame.K_r:
+                    lp_id, rp_id = glGetUniformLocation(self.program_id, "lp"), glGetUniformLocation(self.program_id, "rp")
+                    cmapc_id= glGetUniformLocation(self.program_id, "cmapc")
+                    rrp, rlp, glp, grp, blp, brp = np.random.rand(6)*4.9+0.1
+                    R = lambda t :  (1-t)**rrp*t**rlp
+                    G = lambda t :  (1-t)**grp*t**glp
+                    B = lambda t :  (1-t)**brp*t**blp
+                    x = np.linspace(0,1,50)
+                    rc, gc, bc = 1/max(R(x)), 1/max(G(x)), 1/max(B(x))                    
+                    glUniform3f(lp_id, rlp,glp,blp), glUniform3f(rp_id, rrp,grp,brp), glUniform3f(cmapc_id, rc,gc,bc)
+                    self.update_colouring(-1)
             if event.type == pygame.MOUSEWHEEL:
                 cx,cy = pygame.mouse.get_pos()
                 self.center = ((cx/self.screen_width)*2-1)*2*self.zoom_amount*(self.screen_width/(2*self.screen_height))+self.center[0], (((-cy/self.screen_height)+1)*2-1)*self.zoom_amount+self.center[1]
                 self.zoom_amount *= (1.25-0.75*event.y)
-                print(self.center)
                 self.update_zoom()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: # left click

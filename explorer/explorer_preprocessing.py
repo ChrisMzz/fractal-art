@@ -75,6 +75,9 @@ uniform vec2 iMouse;
 uniform vec2 center;
 uniform float zoom_amount;
 uniform int colouring;
+uniform vec3 lp;
+uniform vec3 rp;
+uniform vec3 cmapc;
 out vec4 fragColor;
 
 
@@ -168,6 +171,17 @@ vec3 map(in float t)
         7.79*pow(t,1.7)*pow((1.-t),1.3),
         10.18*pow(t,2.8)*pow((1.-t),1.1),
         50.9*pow(t,1.8)*pow((1.-t),5.0)
+        );
+        rgb = vec3(rgb.x*float((0.<=t)&&(t<=1.)),rgb.y*float((0.<=t)&&(t<=1.)),rgb.z*float((0.<=t)&&(t<=1.)));
+        //
+    }
+        else if (colouring == -1)
+    {
+        // Literature
+        rgb = vec3(
+        cmapc.r*pow(t,lp.r)*pow((1.-t),rp.r),
+        cmapc.g*pow(t,lp.g)*pow((1.-t),rp.g),
+        cmapc.b*pow(t,lp.b)*pow((1.-t),rp.b)
         );
         rgb = vec3(rgb.x*float((0.<=t)&&(t<=1.)),rgb.y*float((0.<=t)&&(t<=1.)),rgb.z*float((0.<=t)&&(t<=1.)));
         //
