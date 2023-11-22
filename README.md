@@ -121,6 +121,7 @@ Controls :
  - Mouse Left click : display position in complex plane
  - Mouse scroll : zoom in/out
  - C : change cmap (out of 8 available ones + exported cmap)
+ - R : randomize cmap
  - F11 : fullscreen
  - F12 : take screenshot (named `YYYYMMddhhmmss` based on current time)
 
