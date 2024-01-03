@@ -17,13 +17,16 @@ class PyOGLApp():
         self.screenshot_path = 'dump'
         self.zoom_amount = 1.2
         self.center = (0,0)
+        self.iterparam = 50
         pygame.init()
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
         pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
         pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 32)
         self.screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE |pygame.DOUBLEBUF|pygame.OPENGL|pygame.HWSURFACE)
-        pygame.display.set_caption("Shadertoy testing")
+        pygame.display.set_caption("frctlexplorer")
+        pygame_icon = pygame.image.load('Julia.ico')
+        pygame.display.set_icon(pygame_icon)
         self.program_id = None
         self.clock = pygame.time.Clock()
         
@@ -41,12 +44,18 @@ class PyOGLApp():
         glUniform1f(zoom_amount_id, self.zoom_amount)
         center_id = glGetUniformLocation(self.program_id, "center")
         glUniform2f(center_id, *self.center)
+        
+    def update_iterparam(self):
+        glUseProgram(self.program_id)
+        iterparam_id = glGetUniformLocation(self.program_id, "iterParam")
+        glUniform1i(iterparam_id, self.iterparam)
     
     def manage_events(self, states):
         running = states["running"]
         paused = states["paused"]
         speed = states["speed"]
         slowed = states["slowed"]
+        itermodifier = states["itermodifier"]
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -55,11 +64,17 @@ class PyOGLApp():
                 pygame.display.toggle_fullscreen()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                 paused = bool(1-paused)
-            if event.type == pygame.KEYDOWN: # press arrow keys, screenshot, c or r
+            if event.type == pygame.KEYDOWN: # press o, arrow keys, screenshot, c or r
+                if event.key == pygame.K_o:
+                    self.make_open_window()                
                 if event.key == pygame.K_RIGHT:
                     speed = 2
                 elif event.key == pygame.K_LEFT:
                     speed = 1/2
+                elif event.key == pygame.K_UP:
+                    itermodifier = 1
+                elif event.key == pygame.K_DOWN:
+                    itermodifier = -1
                 if event.key == pygame.K_LCTRL:
                     slowed = True
                 if event.key == pygame.K_c:
@@ -105,23 +120,26 @@ class PyOGLApp():
                     speed = 1
                 if event.key == pygame.K_LCTRL:
                     slowed = False
+                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                    itermodifier = 0
             if event.type == pygame.VIDEORESIZE:
                 self.screen_width, self.screen_height = event.w, event.h
         
-        return {"running":running, "paused":paused, "speed":speed, "slowed":slowed}
+        return {"running":running, "paused":paused, "speed":speed, "slowed":slowed, "itermodifier":itermodifier}
         
     def mainloop(self):
         states = {
             "running":True,
             "paused":False,
             "speed":1,
-            "slowed":False
+            "slowed":False,
+            "itermodifier":0
         }
         running = states["running"]
         paused = states["paused"]
         speed = states["speed"]
         slowed = states["slowed"]
-        
+        itermodifier = states["itermodifier"]
         time_paused = 0
         slowed_amount = 0
         self.initialise()
@@ -137,12 +155,20 @@ class PyOGLApp():
             paused = states["paused"]
             speed = states["speed"]
             slowed = states["slowed"]
+            itermodifier = states["itermodifier"]
             #ticks *= speed
+            self.iterparam += itermodifier
+            if self.iterparam < 1: self.iterparam = 1
+            self.update_iterparam()
             while paused:
                 states = self.manage_events(states)
                 running = states["running"]
                 paused = states["paused"]
+                itermodifier = states["itermodifier"]
                 speed = 1
+                self.iterparam += itermodifier
+                if self.iterparam < 1: self.iterparam = 1
+                self.update_iterparam()
                 self.display(ticks)
                 pygame.display.flip()
                 if not running:

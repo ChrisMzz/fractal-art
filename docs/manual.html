@@ -76,7 +76,8 @@
                     a button for this as it's better done with custom preferences. Typically, to retrieve the image 
                     at (7,19) of a 2D-lerp (lerping lerps), and taking ordertxt to be "bgr", you'd have to write :<br>
                     <code>viewer.add_image(viewer.layers[-1].data[7,19],metadata={"ordertxt":"bgr","arr":viewer.layers[-1].metadata["arr"][7,19]})</code><br>
-                    You can then name the new layer however you want and save it as a <code>.frctl</code> file.
+                    You can then name the new layer however you want and save it as a <code>.frctl</code> file.<br>
+                    If you want, you can also save the whole lerp as a <code>.frctl</code> file, in which case it will behave differently than a regular file.
                 </p>
             </div>
             <div class="column" style="float:right;width:33%">
@@ -93,8 +94,9 @@
         Use the following controls :
         </p>
         <ul>
-            <li>Right arrow key (hold) : speed up Time (time controls iteration limit by default)</li>
+            <li>Right arrow key (hold) : speed up Time</li>
             <li>Left arrow key (hold) : reverse Time</li>
+            <li>Up/down arrow key (hold) : increase/decrease iteration count (only in animations)</li>
             <li>Left Ctrl (hold) : slow down Time</li>
             <li>P : Pause</li>
             <li>C or Middle Click : Change colour map (random between a select few maps)</li>
@@ -102,13 +104,29 @@
             <li>F11 : Fullscreen</li>
             <li>F12 : Screenshot (saves to folder where the instance was launched)</li>
         </ul>
+        <p>Time usually controls iteration count, in which case the up and down keys do nothing, but note that if an "animated" <code>.frctl</code> file is viewed, 
+            time will actually control the animation, which will be randomized to move a function around in the convex enveloppe of the N-cuboid constructed 
+            from the function array. This is explained further in the next section.<br>
+        </p>
         <p>The graphics are custom-controlled by the Python program through the GLSL fragment shader generated on <code>.frctl</code> file open.
             Users can of course close the instance, modify the fragment shader and open the application standalone to experiment.<br><br>
             A couple handcrafted, interesting variables are in the GLSL shader by default, commented out for you to find and try out if you don't know much about shaders.
         </p>
 
     </div>
-    
-
+    <div style='color:white;padding-top: 5mm;padding-bottom: 1cm;padding-left:5mm;padding-right:5mm;background-image:url("images/manualanim.gif")'>
+        <h2>Animations</h2>
+        <p>
+        A feature of the explorer unique to lerping was implemented, where if a lerped image is saved as a <code>.frctl</code> file, it won't be loaded in the same way
+        through the explorer and using a generalised parametrisation of filled cuboids, it was possible to make an animation of a function moving around in the N-dimensional lerped space.
+        </p>
+        <p>
+            The parameter space for an ND space has exactly N parameters that are all controlled by a sine wave of semirandom amplitude and phase,
+            and are labelled <code>p</code>. For more interesting results, that would be out of sync, the user is encouraged to also change the frequencies on a lerp!
+        </p>
+        <div style="padding-bottom: 225mm;">
+        </div>
+        <p>Have fun messing around with all the controls!</p>
+    </div>
 
 </body>

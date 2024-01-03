@@ -2,13 +2,13 @@ from glapp.pyoglapp import *
 from glapp.utils import *
 from glapp.gameobjects.mesh import *
 from OpenGL.GL import *
-from explorer_preprocessing import CustomFrctl
+from explorer_preprocessing import FrctlFile
 from zipfile import ZipFile
 import sys, json, os
 
 CWD = os.getcwd()
 
-def load(path) -> CustomFrctl:
+def load(path) -> FrctlFile:
     os.chdir(os.path.abspath(os.path.dirname(path))) # dirname gives relative directory to file, abspath is in case that's ""
     filename = os.path.basename(path)
     with ZipFile(filename) as zipfile:
@@ -18,7 +18,7 @@ def load(path) -> CustomFrctl:
         arr = np.load(zipfile.extract('function.npy'))
         os.remove(zipfile.extract("metadata.json"))
         os.remove(zipfile.extract("function.npy"))
-        return CustomFrctl(arr, metadata)
+        return FrctlFile(arr, metadata).frctl()
 
 
 class FractalViewer(PyOGLApp):
@@ -32,6 +32,7 @@ class FractalViewer(PyOGLApp):
         self.program_id = create_program(open("shaders/vert.glsl", 'r').read(), open(f"shaders/frag_{self.frag_name}.glsl", 'r').read())
         self.screen_plane = Mesh(self.program_id)
         self.update_colouring(0)
+        self.update_iterparam()
 
     def display(self, speed):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
