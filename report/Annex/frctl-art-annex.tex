@@ -105,7 +105,7 @@ I will write $M(X)$ the space of all complex functions that are meromorphic on $
 \vspace{5mm}
 
 
-\prop{Julia sets, Fatou sets} : \\
+\prop{Julia sets, Fatou sets \cite{Bea91}} : \\
 \begin{changemargin}{1cm}{0cm}
 Let $U$ be an open subset of $\overline{\C}$ and let $f : U \to \overline{\C}$ be a meromorphic function. \\
 $$\mathcal{F}_f = \biggr\lbrace z \in U, \, \, \exists V_z \subset U, \, \, \exists (f^{n_k})_{n_k \in \N}, n_1 < n_2 < \dots, \quad (f^{n_k}) \text{ converges uniformly on compacts subsets of } V_z \biggr\rbrace$$
@@ -183,7 +183,7 @@ Which finally implies $f(z_1) \in \overline{B(w,\varepsilon)}$ again. \\
 
 We have found a neighbourhood $B(w,\varepsilon)$ of $w$ in which any sequence of iterates has terms in one of or both of the sets $\overline{B(w, \varepsilon)}$ and $\overline{B(0, 2 \varepsilon)}$. \\
 \vspace{2mm}
-$\overline{B(w, \varepsilon)}$ is a the (compact) closure of the neighbourhood, so the Bolzano-Weierstrass theorem guarantees that we can take a subsequence of iterates (specifically such that we exclude all terms in $\overline{B(0, 2 \varepsilon)}$) which will converge (sequential compactness) in $\overline{B(w, \varepsilon)}$. \\
+$\overline{B(w, \varepsilon)}$ is a the (compact) closure of the neighbourhood, so the subsequence in $\overline{B(w, \varepsilon)}$ is uniformly bounded and we can apply Montel's theorem, which guarantees that the subsequence of iterates (such that we exclude all terms in $\overline{B(0, 2 \varepsilon)}$) will converge uniformly in $\overline{B(w, \varepsilon)}$. \\
 \vspace{5mm}
 
 Thus we conclude $w \in \mathcal{F}_f$. 
@@ -192,7 +192,7 @@ Thus we conclude $w \in \mathcal{F}_f$.
 Note that this proof \textit{requires} the definition to extend to subsequences, because of how the given sequences of iterates of $f$ have values in disjoint sets. \\
 \vspace{2mm}
 
-Here is a visual representation of this disjointness (made interactive \textcolor{blue}{\underline{\href{https://www.geogebra.org/m/eee6ukbk}{here}}}) : \\
+Here is a visual representation of this disjointness (made interactive \textcolor{blue}{\underline{\href{https://www.geogebra.org/m/vy55mhwu}{here}}}) : \\
 \vspace{-3mm}
 \begin{center}
 \includegraphics[scale=0.9]{complementminus1} \\
@@ -203,7 +203,7 @@ As goes the proof, the maximal possible $\varepsilon$ for which the proof is val
 \begin{center}
 \includegraphics[scale=0.3]{20231028105914}
 \textit{$Bas(0)$ (black) for $z \mapsto z^2-1$ with biggest neighbourhood of $w = -1$ that is still in $Bas(0)$ (red).} \\
-Image obtained using "Inverted lightness RGB" colourmap of my \textcolor{blue}{\underline{\href{https://github.com/ChrisMzz/pyogl-shader-tester/blob/main/shaders/frag_incriter.glsl}{Julia set shader}}}, with fixed $c$.
+Image obtained using "Inverted lightness RGB" colourmap of the \texttt{frctlexplorer}, with fixed $c$.
 \end{center}
 
 

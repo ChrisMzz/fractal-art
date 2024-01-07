@@ -124,21 +124,32 @@ The purpose of this document is to provide some explanations about my Programmin
 \vspace{5mm}
 I'm aware the title isn't very informative but that's because a more accurate one would be too long, so I'll go over what it's really about in the first section of this document. \\
 \vspace{2mm}
-I'll split the rest into two main sections, which I'm naming \underline{Maths details} and \underline{Coding details} for lack of better titles. The former will explain how the code relates to Fatou and Julia sets, and how images can be obtained from the methods I present, but I've compiled more in-depth details in an external document for this. The latter will focus on some more algorithmic coding challenges I had to overcome in order to translate the mathematical complexity (in both the literal and maths sense) into images a viewer can interact with.
-
+I'll split the rest into two main sections, which I'm naming \underline{Maths details} and \underline{Coding details} for lack of better titles. The former will explain how the code relates to Fatou and Julia sets, and how images can be obtained from the methods I present, but I've compiled more in-depth details in an external document for this. The latter will focus on some more algorithmic coding challenges I had to overcome in order to translate the mathematical complexity (in both the literal and maths sense) into images a viewer can interact with. \\
+\vspace{5mm}
+This being a very code-oriented, in the Coding details section, I only focus on the most mathematically complicated piece of \textit{Python} code I wrote for the project. \\
+\vspace{5mm}
 
 \section{Subject choice and design philosophy}
 
-I chose this subject because I've been working on fractals, and more specifically Julia / Fatou sets in my own time for over a year now, and I've coded complex function iteration in multiple languages now, from a python-like Matlab script, to writing a pure fragment shader in GLSL (this one is available on my GitHub as \texttt{pyogl-shader-tester}). \\
+The dynamics of complex functions is a subject that has captivated many, like myself, to try and visualise, recreate and understand for a long time. Specifically, in functional analysis, the study of iterates of complex functions has led to very famous fractals that are often recognisable by shape alone. \\
+\vspace{2mm}
+I knew when starting this project that it would be very difficult to achieve anything significant, and that any mathematical results would just be derived from others' work.
 \vspace{5mm}
 
-During summer 2023, I had the opportunity of working in a Centuri lab for a training course, during which I became familiar with the \texttt{napari} package, and soon realised that I would use it for a Julia set related project as it allowed the visualisation of $N$-dimensional \texttt{numpy} arrays. \\
+During summer 2023, I had the opportunity of working in a CENTURI lab for a training course, during which I became familiar with the \texttt{napari} package, and soon realised that I would use it for a new Julia set related project as it allowed the visualisation of $N$-dimensional \texttt{numpy} arrays. \\
 \vspace{5mm}
 
 I wanted to try something new and actually make a semi-interactive Julia set generator that would display images as they generated, and through my newly discovered optimisations of colourings thanks to maths literature, I was able to get the generator working, and the focus of my project would then be to add user-friendly features. \\
 \vspace{5mm}
 
+The main challenge I wanted to tackle was the linear interpolation of any two functions' Julia set approximate images, as managing it would not only allow a generalisation leading to $N$-dimensional objects, but also answer the question of whether \textit{chaotic behaviour} actually occurs in the Julia sets appearing in any parametric space of functions. \\
+\vspace{2mm}
+I'd like to also know if two different functions having the same Julia set \cite{Lev97} have the same linear interpolation landscape when lerping with any third function, although this exploration was not included in this document. \\
+\pagebreak
+
 \section{Maths details}
+
+In the whole document, I use the notation $\llbracket a,b \rrbracket$ as the set of integers from $a$ to $b$. \\
 
 \subsection{Computational functions of \texttt{fractalize.py}}
 
@@ -152,7 +163,7 @@ The reason I use an \textit{array} to represent a function instead of anything e
 
 Let $A \in \mathcal{M}_{2,n}(\R)$, $A = (a_{ij})_{\underset{1 \leq j \leq n}{1 \leq i \leq 2}}$. Then : \\
 $$f(z) = \sum_{k=1}^n{(a_{1k}+i a_{2k})z^k} = \sum_{k=1}^n{a_k'z^k}$$
-is the series expansion of order $n$, of a certain function. According to the function we want to emulate, we can just feed a series expansion to the function to get a decent approximation of the Fatou set image. Note that the Julia set itself is very different and not unique to a function \cite{Lev97}, though this won't be explored here. \\
+is the series expansion of order $n$, of a certain function. According to the function we want to emulate, we can just feed a series expansion to the function to get a decent approximation of the Fatou set image. Note that the Julia set itself is very different and not unique to a function, though this won't be explored here. \\
 \vspace{5mm}
 
 I limit the space to $\lVert a_k' \rVert_{\infty} < 1$ with the supnorm metric, because the best-looking results tend to gravitate around series expansions whose terms have small moduli. This could be better optimised but doesn't seem to affect the generation of interesting results. \\
@@ -173,8 +184,8 @@ The \underline{Julia set} appears somewhat by "completion" of the Fatou set, as 
 
 For better-looking results, I opted to use the \textit{Normalized Iteration Count} algorithm \cite{Jon19}. The source of this method seems to be lost to a faulty link in \cite{Sil13}, but I thought I'd rather use a more generalised version of the modified Bernstein equations provided so that the generated images would seem less repetitive. \\
 \vspace{2mm}
-This method produces smoother results by keeping track of iteration counts rather than actual values of the iterates. \\
-\pagebreak
+This method produces smoother results by keeping track of iteration counts rather than actual values of the conserved iterates. \\
+\vspace{5mm}
 
 \begin{multicols}{2}
 \includegraphics[scale=0.3]{hls_v_nic}
@@ -236,7 +247,7 @@ This thought brought me to the idea of displaying these images for $N$-dimension
 Let $f, g$ be two functions defined by polynomials of order $k$. \\
 I'll call $lerp$ the \textit{linear interpolation} of $f$ and $g$, that is : \\
 \begin{equation}
-\forall t \in \R, \quad lerp(t) = tf + (1-t)g
+\forall t \in \R, \quad lerp(f,g)(t) = (1-t)f + tg
 \end{equation}
 The classical definition uses $t \in [0,1]$, but we can also use $t \in \R$, as for all $t \in \R$, $lerp(f,g)(t)$ is a function that is polynomial, and of order $k$. \\
 \vspace{5mm}
@@ -246,9 +257,11 @@ In algebraic terms, $lerp(f,g) \in \mathcal{L}(\R, \mathcal{L}(\C, \C))$. \\
 
 Now consider $L_1 = lerp(f_1,g_1)$, $L_2 = lerp(f_2,g_2)$. \\
 As, for any $t \in \R$, $L_1(t)$ and $L_2(t)$ are complex polynomial functions of order $k$, we can define a new lerp : \\
-$$\forall h \in \R, \quad lerp(L_1,L_2)(h) = hL1 + (1-h)L_2$$
+$$\forall h \in \R, \quad lerp(L_1,L_2)(h) = (1-h)L1 + hL_2$$
 or 
-$$\forall (h,t) \in \R^2, \quad lerp(L_1,L_2)(h,t) = hL_1(t) + (1-h)L_2(t)$$
+\begin{equation}
+\forall (h,t) \in \R^2, \quad lerp(L_1,L_2)(h,t) = (1-h)L_1(t) + hL_2(t)
+\end{equation}
 which of course yields $\dim \lbrace Span(lerp(L_1,L_2)(h,t)) \rbrace = 2$. \\
 Note that $lerp(L_1,L_2) \in \mathcal{L}(\R, \mathcal{L}(\R, \mathcal{L}(\C, \C))) = \mathcal{L}^2(\R, \mathcal{L}(\C, \C))$. \\
 \vspace{5mm}
@@ -257,7 +270,7 @@ Note that $lerp(L_1,L_2) \in \mathcal{L}(\R, \mathcal{L}(\R, \mathcal{L}(\C, \C)
 
 We define the interpolated space as follows : \\
 
-$$\forall p \geq 1, \quad \forall (F,G) \in \mathcal{L}^p(\R, \mathcal{L}(\C,\C))^2, \quad \forall t \in \R^{p+1}, \quad lerp(F,G)(t) = t_{p+1}F(t_0, \dots, t_p) + (1-t_{p+1})G(t_0, \dots, t_p)$$
+$$\forall p \geq 1, \quad \forall (F,G) \in \mathcal{L}^p(\R, \mathcal{L}(\C,\C))^2, \quad \forall t \in \R^{p+1}, \quad lerp(F,G)(t) = (1-t_{p+1})F(t_0, \dots, t_p) + t_{p+1}G(t_0, \dots, t_p)$$
 Where of course if $p=0$ we can just use the traditional definition of a lerp given in $(1)$. \\
 \vspace{5mm}
 
@@ -325,8 +338,12 @@ Luckily, \texttt{napari} is built for this type of data so we can use sliders to
 
 Again, the process ends as the returned \texttt{hyperplane} arrays are a dimension lower than the array list, meaning their shape size decrements by $1$. \\
 \vspace{5mm}
-I won't be including images of the results of this process as many of these can be accessed on the project's main page.
-
+I won't be including images of the results of this process as many of these can be accessed on the project's main page. \\
+\vspace{2mm}
+Note that this implementation requires two elements to be of the same shape so that they can combine into a higher-dimensional shape. This isn't \textit{strictly} necessary as it's known that $N+1$ points is the minimum requirement for creating a generalised hyper tetrahedron ($N$-simplex). This is what the previous implementation of the lerp was \textcolor{blue}{\underline{\href{https://github.com/ChrisMzz/fractal-art/commit/969f2b91422a85f62373049e1803790af383be2d\#commitcomment-125562036}{programmed to do}}}, but the images obtained were underwhelming so it was replaced by the current cuboid version. \\
+\vspace{2mm}
+I also managed, using array manipulation in the napari console, to find an example of two different looking lerps, between a function and two functions having an identical Julia. This example is provided in the GitHub repository's main page. \\
+\vspace{2mm}
 
 \subsection{Extra features}
 
@@ -369,12 +386,47 @@ This can be fixed using a size-1 lerp of the image with itself and setting the d
 Note that it's possible to set the \texttt{ordertxt} with repeats (so \texttt{"rrr"} would always give a black and white image for example).
 
 
+\subsection{\texttt{frctlexplorer} application}
+
+To conclude this document, the goals of coding a visualisation of linear interpolation between images of Julia sets through the interpolation of certain functions, as well as making an easy-to-understand UI for practical use, were achieved without any major hiccups. \\
+\vspace{5mm}
+The only obvious downside is that this Julia sets project's sole purpose, on a practical level, is to generate high-resolution images of previously \textit{unseen} Julia sets, due to the randomization of the functions. \\
+\vspace{2mm}
+This was done almost as I intended, except for the very costly tradeoff of time for resolution, due to Python being a high-level GPL. \\
+\vspace{1cm}
+
+To fix this problem, I also coded \texttt{frctlexplorer}, an application that converts any \texttt{.frctl} file into a fragment shader in GLSL, and then runs it using the cmap from the \texttt{.frctl} file itself to render the set. The user can zoom in (to an extent), change colourmaps, and most importantly for this project, take screenshots (see \href{http://chrismzz.github.io/fractal-art/manual.html}{\textcolor{blue}{\underline{manual}}}). \\
+\vspace{2mm}
+The complex plane's image through our function has to be represented in GLSL by separating the real part from the imaginary part, but we can do that in Python using Newton binomials, as the functions are given as arrays representing their series expansion. \\
+\vspace{5mm}
+
+Parsing of lerped functions as animated fractals was significantly more complicated than anything else in this project, but as I haven't found any meaningful documents on the matter, I'm not sure I have the ability to prove any of the claims I'll make in the next section. \\
+\vspace{5mm}
+
+\subsubsection{Animated fractals}
+
+Given a $2^N$ functions, we saw that we can construct an $N$-dimensional cuboid of functions and represent the Julia sets of a discrete selection of points within its complex envelope. \\
+\vspace{2mm}
+In the explorer, I wanted to only keep the "vertices" of this cuboid and find a parametric representation of the cuboid only using these vertices. \\
+I knew that this should be possible with only $N$ parameters (or else it would pass over itself by rank-nullity theorem, which I didn't want), so I developed $(2)$ to get a sense of what the equation should look like and that allowed me to derive a general equation for parametrically representing the convex envelope of a cuboid. \\
+\vspace{5mm}
+
+Let $\llbracket 0,1 \rrbracket^N$ be the set of names of vertices of a $N$-dimensional cuboid. This set has cardinal $2^N$ and gives us the general graph theory notation we'll need. \\
+\vspace{2mm}
+Consider $T := \lbrace t_k, \quad 1 \leq k \leq N \rbrace$ a set of parameters. \\
+\vspace{2mm}
+For brevity, given a vertex $V$, we'll write $n_V := \# \lbrace V_i = 1 \rbrace$ the number of $1$s in the label of the vertex. \\
+\vspace{2mm}
+Finally, we'll use the notation $\begin{pmatrix}
+X \\ k
+\end{pmatrix}$ the set of all subsets of $X$ of cardinal $k$. \\
+\vspace{5mm}
+
+The parametric representation of such a $N$-dimensional cuboid using these notations can be given as : \\
+$$\sum_{V \in \llbracket 0, 1 \rrbracket^N}{\left( \sum_{k=n_V}^N{(-1)^{N-n_V} \prod{\begin{pmatrix} T \\ k \end{pmatrix}}} \right) \cdot V}$$
 
 
-
-
-
-
+This is implemented in the function \texttt{define\_parameter(pos)} given a vertex represented by \texttt{pos}, and is summed over using a vertex name generator \texttt{hypercorners(shape)} in parsing.
 
 
 \bibliographystyle{alpha.bst}
