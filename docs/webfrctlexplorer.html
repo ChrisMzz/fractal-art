@@ -1,0 +1,218 @@
+
+
+<!DOCTYPE html>
+<head>
+    <title>Fractal Art - web-frctlexplorer</title>
+    <link rel="stylesheet" href="website.css">
+    <link rel="icon" href="images/favicon.ico">
+
+</head>
+
+<body>
+    
+<canvas id="canvas" style="width:-webkit-fill-available;height:-webkit-fill-available;position:absolute;top:0px"></canvas>
+<script src="header.js"></script> <!-- header with links to repo, download page (self), manual -->
+<!--
+for most samples webgl-utils only provides shader compiling/linking and
+canvas resizing because why clutter the examples with code that's the same in every sample.
+See https://webglfundamentals.org/webgl/lessons/webgl-boilerplate.html
+and https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+for webgl-utils, m3, m4, and webgl-lessons-ui.
+-->
+<script src="webgl-utils.js"></script>
+<div id="#debugtext" style="display:none;padding:5px;background-color:rgba(72, 21, 35, 0.75);position:absolute;top:73px;width:330px;height:300px">
+<div style="position:absolute;top:15px;left:15px;color:white;">zoom_amount</div>
+<div style="position:absolute;top:35px;left:15px;color:white;">iterParam</div>
+<div style="position:absolute;top:55px;left:15px;color:white;">mX, </div>
+<div style="position:absolute;top:75px;left:15px;color:white;">mY, </div>
+<div style="position:absolute;top:55px;left:45px;color:white;">cX</div>
+<div style="position:absolute;top:75px;left:45px;color:white;">cY</div>
+<div style="position:absolute;top:115px;left:15px;color:white;">colouring</div>
+<div style="position:absolute;top:135px;left:15px;color:white;">cmapcR</div>
+<div style="position:absolute;top:150px;left:15px;color:white;">cmapcG</div>
+<div style="position:absolute;top:165px;left:15px;color:white;">cmapcB</div>
+<div style="position:absolute;top:185px;left:15px;color:white;">lpR</div>
+<div style="position:absolute;top:200px;left:15px;color:white;">lpG</div>
+<div style="position:absolute;top:215px;left:15px;color:white;">lpB</div>
+<div style="position:absolute;top:235px;left:15px;color:white;">rpR</div>
+<div style="position:absolute;top:250px;left:15px;color:white;">rpG</div>
+<div style="position:absolute;top:265px;left:15px;color:white;">rpB</div>
+
+<div style="display:none;position:absolute;top:15px;left:115px;color:white;" id="#zoom_amount">1.0</div>
+<div style="display:none;position:absolute;top:35px;left:115px;color:white;" id="#iterParam">50</div>
+<div style="display:none;position:absolute;top:55px;left:115px;color:white;" id="#mouseX">0.0</div>
+<div style="display:none;position:absolute;top:75px;left:115px;color:white;" id="#mouseY">0.0</div>
+<div style="display:none;position:absolute;top:55px;left:145px;color:white;" id="#centerX">0.0</div>
+<div style="display:none;position:absolute;top:75px;left:145px;color:white;" id="#centerY">0.0</div>
+<div style="display:none;position:absolute;top:115px;left:115px;color:white;" id="#colouring">1</div> <!-- the variables from here -->
+<div style="display:none;position:absolute;top:135px;left:115px;color:white;" id="#cmapcR">1.0</div>
+<div style="display:none;position:absolute;top:150px;left:115px;color:white;" id="#cmapcG">1.0</div>
+<div style="display:none;position:absolute;top:165px;left:115px;color:white;" id="#cmapcB">1.0</div>
+<div style="display:none;position:absolute;top:185px;left:115px;color:white;" id="#lpR">1.0</div>
+<div style="display:none;position:absolute;top:200px;left:115px;color:white;" id="#lpG">1.0</div>
+<div style="display:none;position:absolute;top:215px;left:115px;color:white;" id="#lpB">1.0</div>
+<div style="display:none;position:absolute;top:235px;left:115px;color:white;" id="#rpR">1.0</div>
+<div style="display:none;position:absolute;top:250px;left:115px;color:white;" id="#rpG">1.0</div>
+<div style="display:none;position:absolute;top:265px;left:115px;color:white;" id="#rpB">1.0</div> <!-- to here, are overwritten on page load -->
+</div>
+
+
+<script>
+  debug = false;
+
+  function makeMapArr(startValue, stopValue, cardinality, map) {
+    var arr = [];
+    var step = (stopValue - startValue) / (cardinality - 1);
+    for (var i = 0; i < cardinality; i++) {
+      arr.push(map(startValue + (step * i)));
+    }
+    return arr;
+  }
+
+    // randomize colourmap at start
+        document.getElementById("#colouring").innerHTML = String(-1);
+        rlp = String(Math.random()*4.9+0.1); rrp = Math.random()*4.9+0.1;
+        glp = String(Math.random()*4.9+0.1); grp = Math.random()*4.9+0.1;
+        blp = String(Math.random()*4.9+0.1); brp = Math.random()*4.9+0.1;
+        document.getElementById("#lpR").innerHTML = String(rlp);document.getElementById("#rpR").innerHTML = String(rrp);
+        document.getElementById("#lpG").innerHTML = String(glp);document.getElementById("#rpG").innerHTML = String(grp);
+        document.getElementById("#lpB").innerHTML = String(blp);document.getElementById("#rpB").innerHTML = String(brp);
+        mapR = function(t) {return (1-t)**rrp*t**rlp}
+        mapG = function(t) {return (1-t)**grp*t**glp}
+        mapB = function(t) {return (1-t)**brp*t**blp}
+        // thanks to https://stackoverflow.com/a/40475362/17091581
+        rc = 1/makeMapArr(0,1,100,mapR).reduce((a, b) => Math.max(a, b), -Infinity);
+        gc = 1/makeMapArr(0,1,100,mapR).reduce((a, b) => Math.max(a, b), -Infinity);
+        bc = 1/makeMapArr(0,1,100,mapR).reduce((a, b) => Math.max(a, b), -Infinity);
+        document.getElementById("#cmapcR").innerHTML = String(rc);
+        document.getElementById("#cmapcG").innerHTML = String(gc);
+        document.getElementById("#cmapcB").innerHTML = String(bc);
+
+    canvas.addEventListener("mousemove", (event)=>
+  {
+    document.getElementById("#mouseX").innerHTML = String(event.clientX);
+    document.getElementById("#mouseY").innerHTML = String(event.clientY);
+  });
+  document.addEventListener("click", (event)=>
+  {
+      console.log(event);
+  });
+  document.addEventListener("dbclick", (event)=>
+  {
+      // do smth ?
+  });
+  
+  document.addEventListener("mousewheel", (event)=>
+  {
+      if (event.deltaY < 0) {
+        zoom_amount = parseFloat(document.getElementById("#zoom_amount").innerHTML)*(3/4)
+        document.getElementById("#zoom_amount").innerHTML = String(zoom_amount);
+
+      } else {
+        zoom_amount = parseFloat(document.getElementById("#zoom_amount").innerHTML)*(4/3)
+        document.getElementById("#zoom_amount").innerHTML = String(zoom_amount);
+      }
+      document.getElementById("#centerX").innerHTML = String( ((parseFloat(document.getElementById("#mouseX").innerHTML)/canvas.width)*2-1)*2*zoom_amount*(canvas.width/(2*canvas.height))+parseFloat(document.getElementById("#centerX").innerHTML) );
+      document.getElementById("#centerY").innerHTML = String( (((-parseFloat(document.getElementById("#mouseY").innerHTML)/canvas.height)+1)*2-1)*zoom_amount+parseFloat(document.getElementById("#centerY").innerHTML) );
+  });
+  document.addEventListener("keypress", (event)=>
+  {
+
+      if (event.code == 'KeyD') { // debug values
+        debug = Boolean(1-debug);
+        if (debug) {
+          document.getElementById("#zoom_amount").style["display"] = "block";
+          document.getElementById("#iterParam").style["display"] = "block";
+          document.getElementById("#mouseX").style["display"] = "block";
+          document.getElementById("#mouseY").style["display"] = "block";
+          document.getElementById("#centerX").style["display"] = "block";
+          document.getElementById("#centerY").style["display"] = "block";
+          document.getElementById("#colouring").style["display"] = "block";
+          document.getElementById("#cmapcR").style["display"] = "block";
+          document.getElementById("#cmapcG").style["display"] = "block";
+          document.getElementById("#cmapcB").style["display"] = "block";
+          document.getElementById("#lpR").style["display"] = "block";
+          document.getElementById("#lpG").style["display"] = "block";
+          document.getElementById("#lpB").style["display"] = "block";
+          document.getElementById("#rpR").style["display"] = "block";
+          document.getElementById("#rpG").style["display"] = "block";
+          document.getElementById("#rpB").style["display"] = "block";
+          /* // used to be a bunch of elements of class debugtext, changed to be in a coloured div
+          for (i=0;i<(document.getElementsByClassName("debugtext").length);i++){
+            document.getElementsByClassName("debugtext")[i].style["display"] = "block";
+          }
+          */
+          document.getElementById("#debugtext").style["display"] = "block";
+        } else {
+          document.getElementById("#zoom_amount").style["display"] = "none";
+          document.getElementById("#iterParam").style["display"] = "none";
+          document.getElementById("#mouseX").style["display"] = "none";
+          document.getElementById("#mouseY").style["display"] = "none";
+          document.getElementById("#centerX").style["display"] = "none";
+          document.getElementById("#centerY").style["display"] = "none";
+          document.getElementById("#colouring").style["display"] = "none";
+          document.getElementById("#cmapcR").style["display"] = "none";
+          document.getElementById("#cmapcG").style["display"] = "none";
+          document.getElementById("#cmapcB").style["display"] = "none";
+          document.getElementById("#lpR").style["display"] = "none";
+          document.getElementById("#lpG").style["display"] = "none";
+          document.getElementById("#lpB").style["display"] = "none";
+          document.getElementById("#rpR").style["display"] = "none";
+          document.getElementById("#rpG").style["display"] = "none";
+          document.getElementById("#rpB").style["display"] = "none";
+          document.getElementById("#debugtext").style["display"] = "none";
+        }
+      }
+      if (event.code == 'KeyC') { // change colour map
+        document.getElementById("#colouring").innerHTML = String(parseInt(Math.random()*9));
+      } 
+      if (event.code == 'KeyR') { // random colour map  
+        document.getElementById("#colouring").innerHTML = String(-1);
+        rlp = String(Math.random()*4.9+0.1); rrp = Math.random()*4.9+0.1;
+        glp = String(Math.random()*4.9+0.1); grp = Math.random()*4.9+0.1;
+        blp = String(Math.random()*4.9+0.1); brp = Math.random()*4.9+0.1;
+        document.getElementById("#lpR").innerHTML = String(rlp);document.getElementById("#rpR").innerHTML = String(rrp);
+        document.getElementById("#lpG").innerHTML = String(glp);document.getElementById("#rpG").innerHTML = String(grp);
+        document.getElementById("#lpB").innerHTML = String(blp);document.getElementById("#rpB").innerHTML = String(brp);
+        mapR = function(t) {return (1-t)**rrp*t**rlp}
+        mapG = function(t) {return (1-t)**grp*t**glp}
+        mapB = function(t) {return (1-t)**brp*t**blp}
+        // thanks to https://stackoverflow.com/a/40475362/17091581
+        rc = 1/makeMapArr(0,1,100,mapR).reduce((a, b) => Math.max(a, b), -Infinity);
+        gc = 1/makeMapArr(0,1,100,mapG).reduce((a, b) => Math.max(a, b), -Infinity);
+        bc = 1/makeMapArr(0,1,100,mapB).reduce((a, b) => Math.max(a, b), -Infinity);
+        document.getElementById("#cmapcR").innerHTML = String(rc);
+        document.getElementById("#cmapcG").innerHTML = String(gc);
+        document.getElementById("#cmapcB").innerHTML = String(bc);
+      }       
+  });
+  document.addEventListener("keydown", (event)=>
+  {
+      if (event.key == 'ArrowLeft') {console.log(">")} 
+      if (event.key == 'ArrowRight') {console.log("<")}  
+      if (event.key == 'ArrowUp') {
+        document.getElementById("#iterParam").innerHTML = String(parseInt(document.getElementById("#iterParam").innerHTML)+2);
+      } 
+      if (event.key == 'ArrowDown') {
+        if (parseInt(document.getElementById("#iterParam").innerHTML) > 2) {
+          document.getElementById("#iterParam").innerHTML = String(parseInt(document.getElementById("#iterParam").innerHTML)-2);
+        }
+      }  
+      
+  });
+
+</script>
+
+<script src="webfrctlexplorer.js"></script>
+<div style="background-color:rgba(0,40,80,0.75);position:absolute;right:0px;top:73px;color:white;padding:5px">
+<p style="font-size:small">Reload page to randomize fractal<br><br>
+  R : Random cmap<br><br>
+  C : Random cmap out of custom presets<br><br>
+  Up/Down : Increase/Decrease iteration count<br><br>
+  Scroll : Zoom in or out in a region<br>
+            centered around mouse location<br><br>
+  D : toggle debug values display<br>
+</p>
+
+</div>
+</body>
