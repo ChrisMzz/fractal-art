@@ -196,8 +196,8 @@ function main() {
     vec2 check = (z/z)*2.; // constant that's the same size as z, to allow use of lessThan function
     vec2 esc = check*float(iter/2); // escape uv
     
-    float p0 = 0.16076937851994388*sin(iTime*0.03+1.9910193300538905);
-    float p1 = 0.6000719669940827*sin(iTime*0.04+0.020682468119338715);
+    float p0 = 0.16076937851994388*sin(iTime*0.15+1.9910193300538905);
+    float p1 = 0.6000719669940827*sin(iTime*0.03+0.020682468119338715);
 
     float anim00 = (1.) - (1.*p0*0. + 1.*p1*0.) + (1.*p0*0.*p1*0.);
     float anim01 = (1.*p0*0. + 1.*p1*1.) - (1.*p0*0.*p1*1.);

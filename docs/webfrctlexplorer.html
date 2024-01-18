@@ -93,8 +93,8 @@ for webgl-utils, m3, m4, and webgl-lessons-ui.
         mapB = function(t) {return (1-t)**brp*t**blp}
         // thanks to https://stackoverflow.com/a/40475362/17091581
         rc = 1/makeMapArr(0,1,100,mapR).reduce((a, b) => Math.max(a, b), -Infinity);
-        gc = 1/makeMapArr(0,1,100,mapR).reduce((a, b) => Math.max(a, b), -Infinity);
-        bc = 1/makeMapArr(0,1,100,mapR).reduce((a, b) => Math.max(a, b), -Infinity);
+        gc = 1/makeMapArr(0,1,100,mapG).reduce((a, b) => Math.max(a, b), -Infinity);
+        bc = 1/makeMapArr(0,1,100,mapB).reduce((a, b) => Math.max(a, b), -Infinity);
         document.getElementById("#cmapcR").innerHTML = String(rc);
         document.getElementById("#cmapcG").innerHTML = String(gc);
         document.getElementById("#cmapcB").innerHTML = String(bc);
