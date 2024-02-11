@@ -9,6 +9,7 @@ uniform int colouring;
 uniform vec3 lp;
 uniform vec3 rp;
 uniform vec3 cmapc;
+uniform int iterParam;
 out vec4 fragColor;
 
 
@@ -123,9 +124,9 @@ vec3 map(in float t)
     {
         // Default (0)
         rgb = vec3(
-        24.56359017676485*pow(t,3.3169403792176397)*pow((1.-t),1.6889826104224315),
-        127.54740076996872*pow(t,2.667304666185057)*pow((1.-t),4.755706243849141),
-        4.091783693113925*pow(t,2.9861728315930662)*pow((1.-t),0.4875150140722738)
+        16.305209186715643*pow(t,2.1320510750726833)*pow((1.-t),1.9044077001982713),
+        50.08189420503892*pow(t,4.310265908688774)*pow((1.-t),1.9754095435244416),
+        28.89341887049879*pow(t,2.7039062331819586)*pow((1.-t),2.1880357242384156)
         );
         rgb = vec3(rgb.x*float((0.<=t)&&(t<=1.)),rgb.y*float((0.<=t)&&(t<=1.)),rgb.z*float((0.<=t)&&(t<=1.)));
         //
@@ -155,8 +156,9 @@ void main( )
     //vec2 c = vec2(cos(iTime*0.04), sin(iTime*0.04))*gr; // complex variable c going in circles around origin
     
     // fixed
-    vec2 c = vec2(0.,0.);
+    //vec2 c = vec2(0.,0.);
     //vec2 c = vec2(((iMouse.x/iResolution.x)*2.-1.)*2*zoom_amount*(iResolution.x/(2.*iResolution.y))-center.x, ((-(iMouse.y/iResolution.y)+1.)*2.-1.)*zoom_amount)-center.y;
+    float c = (iMouse.x/iResolution.x)+0.5;
 
     /*
         Compute iter iterates of f on the rendered complex plane
@@ -165,22 +167,33 @@ void main( )
     */
 
     int iter = int(iTime*10.);
-    //int iter = 200;
+    //int iter = iterParam;
 
 
     vec2 check = (z/z)*2.; // constant that's the same size as z, to allow use of lessThan function
     vec2 esc = check*iter/2; // escape uv
     
+    float aM = 1.0; // putting c here will show that it causes translational effects
+    float bM = c; // zoom effect
+    float cM = 1.0;
+    float dM = 0.0;
+    
+    z = (bM*z-aM)/(cM-dM*z);
     for (int i=0; i<iter; i++) {
 
+        
         z = vec2(
-            -0.07379362864059802 + ((-0.6614655625997423)*(1.0*pow(z.x,1.)*pow(z.y,0.))-(0.6920684473508174)*(1.0*pow(z.x,0.)*pow(z.y,1.))) + ((0.37009102368059543)*( - 1.0*pow(z.x,0.)*pow(z.y,2.) + 1.0*pow(z.x,2.)*pow(z.y,0.))-(0.9141592499437421)*(2.0*pow(z.x,1.)*pow(z.y,1.))) + ((-0.25203773537241325)*( - 3.0*pow(z.x,1.)*pow(z.y,2.) + 1.0*pow(z.x,3.)*pow(z.y,0.))-(0.9965888843846091)*( - 1.0*pow(z.x,0.)*pow(z.y,3.) + 3.0*pow(z.x,2.)*pow(z.y,1.))) + ((0.24681331392385975)*(1.0*pow(z.x,0.)*pow(z.y,4.) - 6.0*pow(z.x,2.)*pow(z.y,2.) + 1.0*pow(z.x,4.)*pow(z.y,0.))-(-0.7324248440055514)*( - 4.0*pow(z.x,1.)*pow(z.y,3.) + 4.0*pow(z.x,3.)*pow(z.y,1.))) + ((-0.39427866232531694)*(5.0*pow(z.x,1.)*pow(z.y,4.) - 10.0*pow(z.x,3.)*pow(z.y,2.) + 1.0*pow(z.x,5.)*pow(z.y,0.))-(0.5895258772328513)*(1.0*pow(z.x,0.)*pow(z.y,5.) - 10.0*pow(z.x,2.)*pow(z.y,3.) + 5.0*pow(z.x,4.)*pow(z.y,1.))) + ((0.4102157127783519)*( - 1.0*pow(z.x,0.)*pow(z.y,6.) + 15.0*pow(z.x,2.)*pow(z.y,4.) - 15.0*pow(z.x,4.)*pow(z.y,2.) + 1.0*pow(z.x,6.)*pow(z.y,0.))-(-0.26865292820930686)*(6.0*pow(z.x,1.)*pow(z.y,5.) - 20.0*pow(z.x,3.)*pow(z.y,3.) + 6.0*pow(z.x,5.)*pow(z.y,1.))),
-            0.15737685619193043 + ((0.6920684473508174)*(1.0*pow(z.x,1.)*pow(z.y,0.))+(-0.6614655625997423)*(1.0*pow(z.x,0.)*pow(z.y,1.))) + ((0.9141592499437421)*( - 1.0*pow(z.x,0.)*pow(z.y,2.) + 1.0*pow(z.x,2.)*pow(z.y,0.))+(0.37009102368059543)*(2.0*pow(z.x,1.)*pow(z.y,1.))) + ((0.9965888843846091)*( - 3.0*pow(z.x,1.)*pow(z.y,2.) + 1.0*pow(z.x,3.)*pow(z.y,0.))+(-0.25203773537241325)*( - 1.0*pow(z.x,0.)*pow(z.y,3.) + 3.0*pow(z.x,2.)*pow(z.y,1.))) + ((-0.7324248440055514)*(1.0*pow(z.x,0.)*pow(z.y,4.) - 6.0*pow(z.x,2.)*pow(z.y,2.) + 1.0*pow(z.x,4.)*pow(z.y,0.))+(0.24681331392385975)*( - 4.0*pow(z.x,1.)*pow(z.y,3.) + 4.0*pow(z.x,3.)*pow(z.y,1.))) + ((0.5895258772328513)*(5.0*pow(z.x,1.)*pow(z.y,4.) - 10.0*pow(z.x,3.)*pow(z.y,2.) + 1.0*pow(z.x,5.)*pow(z.y,0.))+(-0.39427866232531694)*(1.0*pow(z.x,0.)*pow(z.y,5.) - 10.0*pow(z.x,2.)*pow(z.y,3.) + 5.0*pow(z.x,4.)*pow(z.y,1.))) + ((-0.26865292820930686)*( - 1.0*pow(z.x,0.)*pow(z.y,6.) + 15.0*pow(z.x,2.)*pow(z.y,4.) - 15.0*pow(z.x,4.)*pow(z.y,2.) + 1.0*pow(z.x,6.)*pow(z.y,0.))+(0.4102157127783519)*(6.0*pow(z.x,1.)*pow(z.y,5.) - 20.0*pow(z.x,3.)*pow(z.y,3.) + 6.0*pow(z.x,5.)*pow(z.y,1.)))
+            0.6377144567127571 + ((-0.29928337490647006)*(1.0*pow(z.x,1.)*pow(z.y,0.))-(0.6402743952864653)*(1.0*pow(z.x,0.)*pow(z.y,1.))) + ((0.0857437441490807)*( - 1.0*pow(z.x,0.)*pow(z.y,2.) + 1.0*pow(z.x,2.)*pow(z.y,0.))-(0.29435177760490716)*(2.0*pow(z.x,1.)*pow(z.y,1.))),
+            0.5274612592930681 + ((0.6402743952864653)*(1.0*pow(z.x,1.)*pow(z.y,0.))+(-0.29928337490647006)*(1.0*pow(z.x,0.)*pow(z.y,1.))) + ((0.29435177760490716)*( - 1.0*pow(z.x,0.)*pow(z.y,2.) + 1.0*pow(z.x,2.)*pow(z.y,0.))+(0.0857437441490807)*(2.0*pow(z.x,1.)*pow(z.y,1.)))
         );
+        
+        
 
 
         esc -= vec2(lessThan(z,check)); // does not work as intended as big values aren't "bigger", just undefined
     }
+    z = (aM*z+bM)/(cM*z+dM);
+    
 
     esc /= iter; // esc values are between 0 and iter, so they need to be normalized
 
